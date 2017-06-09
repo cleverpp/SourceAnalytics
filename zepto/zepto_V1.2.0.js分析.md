@@ -30,8 +30,7 @@ ready: function(callback){
 1. DOMContentLoaded事件在许多Webkit浏览器以及IE9上都可以使用, 此事件会在DOM文档准备好以后触发, 包含在HTML5标准中. 对于支持此事件的浏览器, 直接使用DOMContentLoaded事件是最简单最好的选择.IE6,7,8都不支持DOMContentLoaded事件
 2. addEventListener也不兼容IE9以下。
 ## $()之DOM选择
-一个常用的场景是通过选择器selector选择目标元素集合，可以指定上线文context
-### 第一种：$(selector, [context])   ⇒ collection
+一个常用的场景是通过选择器selector选择目标元素集合，可以指定上下文context。$(selector, [context])   ⇒ collection
 例如：
 ```
 $('div')  //=> 所有页面中得div元素
