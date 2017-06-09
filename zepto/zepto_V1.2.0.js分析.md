@@ -31,6 +31,7 @@ ready: function(callback){
 2. addEventListener也不兼容IE9以下。
 ## $()之DOM选择
 一个常用的场景是通过选择器selector选择目标元素集合，可以指定上下文context。$(selector, [context])   ⇒ collection
+
 例如：
 ```
 $('div')  //=> 所有页面中得div元素
