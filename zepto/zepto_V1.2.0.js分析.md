@@ -93,4 +93,51 @@ find: function(selector){
 2. [nodeType](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType)
 3. getElementById、getElementsByClassName、getElementsByTagName、querySelectorAll: https://www.zhihu.com/question/24702250 , http://www.jianshu.com/p/4159485b035d 
 4. [Array.slice.call](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) :slice 方法可以用来将一个类数组（Array-like）对象/集合转换成一个数组。你只需将该方法绑定到这个对象上
+## $()只DOM创建
+当给定一个html字符串片段来创建一个dom节点时。也可以通过给定一组属性映射来创建节点。最快的创建但元素，使用<div> 或 <div/>形式。
+例如：
+```
+// 创建元素:
+$("<p>Hello</p>") //=> 新的p元素
+// 创建带有属性的元素:
+$("<p />", { text:"Hello", id:"greeting", css:{color:'darkblue'} })
+//=> <p id=greeting style="color:darkblue">Hello</p>
+```
+来看一下源码对这类语句的处理：
+1. $('<htmlTag>',context) = zepto.Z(zepto.fragment(selector, RegExp.$1, context),null)  // RegExp.$1 是fragmentRE = /^\s*<(\w+|!)[^>]*>/，及括号内的htmlTag。
+2. zepto.fragment(html,name,context)
+```
+// `$.zepto.fragment` takes a html string and an optional tag name
+  // to generate DOM nodes from the given html string.
+  // The generated DOM nodes are returned as an array.
+  // This function can be overridden in plugins for example to make
+  // it compatible with browsers that don't support the DOM fully.
+  zepto.fragment = function(html, name, properties) {
+    var dom, nodes, container
 
+    // A special case optimization for a single tag
+    if (singleTagRE.test(html)) dom = $(document.createElement(RegExp.$1))
+
+    if (!dom) {
+      if (html.replace) html = html.replace(tagExpanderRE, "<$1></$2>")
+      if (name === undefined) name = fragmentRE.test(html) && RegExp.$1
+      if (!(name in containers)) name = '*'
+
+      container = containers[name]
+      container.innerHTML = '' + html
+      dom = $.each(slice.call(container.childNodes), function(){
+        container.removeChild(this)
+      })
+    }
+
+    if (isPlainObject(properties)) {
+      nodes = $(dom)
+      $.each(properties, function(key, value) {
+        if (methodAttributes.indexOf(key) > -1) nodes[key](value)
+        else nodes.attr(key, value)
+      })
+    }
+
+    return dom
+  }
+```
