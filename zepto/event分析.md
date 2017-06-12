@@ -37,7 +37,9 @@ function compatible(event, source) {
 
 ## 事件监听on
 常用方式如下：
+
 $('#id').on('click',function(){})
+
 $('#id').on('click','div a',function(){})
 
 ```
