@@ -93,8 +93,8 @@ find: function(selector){
 2. [nodeType](https://developer.mozilla.org/zh-CN/docs/Web/API/Node/nodeType)
 3. getElementById、getElementsByClassName、getElementsByTagName、querySelectorAll: https://www.zhihu.com/question/24702250 , http://www.jianshu.com/p/4159485b035d 
 4. [Array.slice.call](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) :slice 方法可以用来将一个类数组（Array-like）对象/集合转换成一个数组。你只需将该方法绑定到这个对象上
-## $()只DOM创建
-当给定一个html字符串片段来创建一个dom节点时。也可以通过给定一组属性映射来创建节点。最快的创建但元素，使用<div> 或 <div/>形式。
+## $()之DOM创建
+当给定一个html字符串片段来创建一个dom节点时。也可以通过给定一组属性映射来创建节点。
 例如：
 ```
 // 创建元素:
