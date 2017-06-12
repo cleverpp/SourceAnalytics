@@ -40,7 +40,7 @@ $('#foo') //=> ID 为 "foo" 的元素
 来看一下源码中对这类语句的处理
 1. 如果指定了context，则$(selector,context)=$(context).find(selector)
       - $(context)，context可以为css选择器，dom，或者Zepto集合对象，最终返回的也都是Zepto集合对象
-      - zepto.Z.find(selector) = $.fn.find(selector)
+      - zepto.Z.find(selector) = $.fn.find(selector)
 ```
 $.fn = {
 ......
