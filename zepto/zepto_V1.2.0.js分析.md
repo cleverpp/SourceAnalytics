@@ -39,8 +39,8 @@ $('#foo') //=> ID 为 "foo" 的元素
 ```
 来看一下源码中对这类语句的处理
 1. 如果指定了context，则$(selector,context)=$(context).find(selector)
-      1. $(context)，context可以为css选择器，dom，或者Zepto集合对象，最终返回的也都是Zepto集合对象
-      2. zepto.Z.find(selector) = $.fn.find(selector)
+      - $(context)，context可以为css选择器，dom，或者Zepto集合对象，最终返回的也都是Zepto集合对象
+      - zepto.Z.find(selector) = $.fn.find(selector)
 ```
 $.fn = {
 ......
@@ -61,18 +61,9 @@ find: function(selector){
 ......
 }
 ```
-      3. $.fn.filter
-```
-filter: function(selector){
-      if (isFunction(selector)) return this.not(this.not(selector))
-      return $(filter.call(this, function(element){
-        return zepto.matches(element, selector)
-      }))
-    },
-```
-      4. Array.map  返回一个新的Zepto对象集合。
 2. 如果未指定context，则$(selector) = zepto.Z(zepto.qsa(document, selector), selector)
-      1. zepto.qsa(document, selector) , 返回一个HTML数组
+      - zepto.qsa(document, selector) , 返回一个HTML数组
+      - zepto.Z([HTMLElement],selector) = new Z([HTMLElement],selector) = {0:HTMLElement,1:HTMLElement,....,selecotr:selector字符串}, 即最终返回的是一个Zepto集合对象。
 ```
   simpleSelectorRE = /^[\w-]*$/;
   zepto.qsa = function(element, selector){
@@ -92,7 +83,6 @@ filter: function(selector){
       )
   }
 ```
-      2. zepto.Z([HTMLElement],selector) = new Z([HTMLElement],selector) = {0:HTMLElement,1:HTMLElement,....,selecotr:selector字符串}, 即最终返回的是一个Zepto集合对象。
 
 知识点：
 1. 选择器类型
