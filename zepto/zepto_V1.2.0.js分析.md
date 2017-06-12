@@ -104,7 +104,7 @@ $("<p />", { text:"Hello", id:"greeting", css:{color:'darkblue'} })
 //=> <p id=greeting style="color:darkblue">Hello</p>
 ```
 来看一下源码对这类语句的处理：
-1. $('<htmlTag>',context) = zepto.Z(zepto.fragment(selector, RegExp.$1, context),null)  // RegExp.$1 是fragmentRE = /^\s*<(\w+|!)[^>]*>/，及括号内的htmlTag。
+1. $('\<htmlTag\>',context) = zepto.Z(zepto.fragment(selector, RegExp.$1, context),null)  // RegExp.$1 是fragmentRE = /^\s*<(\w+|!)[^>]*>/，及括号内的htmlTag。
 2. zepto.fragment(html,name,context)
 ```
 // `$.zepto.fragment` takes a html string and an optional tag name
