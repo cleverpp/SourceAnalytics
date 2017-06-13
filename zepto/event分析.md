@@ -1,36 +1,9 @@
 ## 创建事件$.Event(type,props)
-```
-$.Event = function(type, props) {
-    if (!isString(type)) props = type, type = props.type
-    var event = document.createEvent(specialEvents[type] || 'Events'), bubbles = true
-    if (props) for (var name in props) (name == 'bubbles') ? (bubbles = !!props[name]) : (event[name] = props[name])
-    event.initEvent(type, bubbles, true)
-    return compatible(event)
-  }
-  
-function compatible(event, source) {
-    if (source || !event.isDefaultPrevented) {
-      source || (source = event)
+使用document.createEvent创建事件，并增加了以下三个方法：
+1. event.isDefaultPrevented ：如果preventDefault()被该事件的实例调用，那么返回true。 这可作为跨平台的替代原生的 defaultPrevented属性，如果 defaultPrevented缺失或在某些浏览器下不可靠的时候。
+2. event.isImmediatePropagationStopped ：如果stopImmediatePropagation()被该事件的实例调用，那么返回true。Zepto在不支持该原生方法的浏览器中实现它，  （例如老版本的Android）。
+3. event.isPropagationStopped ：如果stopPropagation()被该事件的实例调用，那么返回true。
 
-      $.each(eventMethods, function(name, predicate) {
-        var sourceMethod = source[name]
-        event[name] = function(){
-          this[predicate] = returnTrue
-          return sourceMethod && sourceMethod.apply(source, arguments)
-        }
-        event[predicate] = returnFalse
-      })
-
-      event.timeStamp || (event.timeStamp = Date.now())
-
-      if (source.defaultPrevented !== undefined ? source.defaultPrevented :
-          'returnValue' in source ? source.returnValue === false :
-          source.getPreventDefault && source.getPreventDefault())
-        event.isDefaultPrevented = returnTrue
-    }
-    return event
-  }
-```
 知识点
 1. 创建事件：document.createEvent
 2. [Event - Web API 接口| MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/Event)
@@ -38,15 +11,19 @@ function compatible(event, source) {
 ## 事件监听on
 常用方式如下：
 
-$('#id').on('click',function(){})
+1. on(type, [selector], function(e){ ... })   ⇒ self
 
-$('#id').on('click','div a',function(){})
+2. on(type, [selector], [data], function(e){ ... })   ⇒ self v1.1+
+
+3. on({ type: handler, type2: handler2, ... }, [selector])   ⇒ self
+
+4. on({ type: handler, type2: handler2, ... }, [selector], [data])   ⇒ self v1.1+
 
 ```
   $.fn.on = function(event, selector, data, callback, one){
     var autoRemove, delegator, $this = this
-    if (event && !isString(event)) {
-      $.each(event, function(type, fn){
+    if (event && !isString(event)) {  // 处理方式3和方式4
+      $.each(event, function(type, fn){
         $this.on(type, selector, data, fn, one)
       })
       return $this
@@ -77,5 +54,34 @@ $('#id').on('click','div a',function(){})
     })
   }
 ```
-  
-  
+其中add(element, event, callback, data, selector, delegator || autoRemove)本质是通过element.addEventListener来实现的。
+
+## 事件监听的其它形式
+1. bind = on
+```
+$.fn.bind = function(event, data, callback){
+    return this.on(event, data, callback)
+  }
+```
+2. delegate = on
+```
+$.fn.delegate = function(selector, event, callback){
+    return this.on(event, selector, callback)
+  }
+```
+3. live = delegate, 其中selector指定为document.body。
+```
+$.fn.live = function(event, callback){
+    $(document.body).delegate(this.selector, event, callback)
+    return this
+  }
+```
+4. one = on
+```
+$.fn.one = function(event, selector, data, callback){
+    return this.on(event, selector, data, callback, 1)
+  }
+```
+## 事件移除off
+对应事件监听on，本质
+  }
