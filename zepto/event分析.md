@@ -83,5 +83,25 @@ $.fn.one = function(event, selector, data, callback){
   }
 ```
 ## 事件移除off
-对应事件监听on，本质
-  }
+对应事件监听on。
+```
+  $.fn.off = function(event, selector, callback){
+    var $this = this
+    if (event && !isString(event)) {
+      $.each(event, function(type, fn){
+        $this.off(type, selector, fn)
+      })
+      return $this
+    }
+
+    if (!isString(selector) && !isFunction(callback) && callback !== false)
+      callback = selector, selector = undefined
+
+    if (callback === false) callback = returnFalse
+
+    return $this.each(function(){
+      remove(this, event, callback, selector)
+    })
+  }
+```
+其中remove(this, event, callback, selector)，本质是通过element.removeEventListener移除事件。
