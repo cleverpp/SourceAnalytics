@@ -105,3 +105,22 @@ $.fn.one = function(event, selector, data, callback){
   }
 ```
 其中remove(this, event, callback, selector)，本质是通过element.removeEventListener移除事件。
+unbind（对应bind）、undelegate（对应delegate），die（对应live），都是通过调用off来实现的。
+## 事件的触发trigger
+```
+  ......
+  focus = { focus: 'focusin', blur: 'focusout' },
+  ......
+  $.fn.trigger = function(event, args){
+    event = (isString(event) || $.isPlainObject(event)) ? $.Event(event) : compatible(event)
+    event._args = args
+    return this.each(function(){
+      // handle focus(), blur() by calling them directly
+      if (event.type in focus && typeof this[event.type] == "function") this[event.type]()
+      // items in the collection might not be DOM elements
+      else if ('dispatchEvent' in this) this.dispatchEvent(event)
+      else $(this).triggerHandler(event, args)
+    })
+  }
+```
+对于focus、blur事件，直接调用,如果当前选择元素有dispatchEvent方法，则调用改方法。否则执行triggerHandler，改方法阻止冒泡。
