@@ -1,0 +1,10 @@
+# 涉及到的基础知识
+## 宽高的那些事
+### clientHeight、offsetHeight
+## css3动画
+### transition
+### transform
+## 事件相关
+### addEventListener和handleEvent
+### touchstart,touchmove,touchend
+### mousedown,mousemove,mouseup
