@@ -4,6 +4,7 @@
 ## css3动画
 ### transition
 ### transform
+### animation
 ## 事件相关
 ### addEventListener和handleEvent
 ### touchstart,touchmove,touchend
