@@ -5,10 +5,10 @@
 
 [react英文文档](https://reactjs.org/)
 
+## [react-dom](https://github.com/facebook/react/tree/master/packages/react-dom)
+
 ## [react](https://github.com/facebook/react/tree/master/packages/react)
 ### React.Component
-
-## [react-dom](https://github.com/facebook/react/tree/master/packages/react-dom)
 
 # 源码阅读边角料
 1. Object.freeze
