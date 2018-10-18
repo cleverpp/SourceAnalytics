@@ -1,4 +1,4 @@
-# React源码分析（React 16.5.2）
+# React源码分析
 [react github](https://github.com/facebook/react)
 
 [react中文文档](https://react.docschina.org/)
@@ -13,14 +13,16 @@
  }
 ```
 
-## [react-dom](https://github.com/facebook/react/tree/master/packages/react-dom)
-```
-ReactDOM.render(element, container[, callback])
-```
+## React16之前，例如：react15.4.2
+### 核心概念
+1. Transaction
+2. 
+### 参考
+1.[React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点：1）组件是一个ReactElement类型的对象，组件与组件的父子关系通过props.children来关联。2）ReactDOM.render(component,mountNode)，不同类型的component对应不同的React内部四大类封装组件，记为componentInstance。而后将其作为参数传入mountComponentIntoNode方法中，由此获得组件对应的HTML，记为变量markup。将真实的DOM的属性innerHTML设置为markup，即完成了DOM插入。3）React四大类
+2.[React源码解析(二):组件的类型与生命周期](https://juejin.im/post/59ca03b9518825177c60d10b)
+3.[
 
-## [react](https://github.com/facebook/react/tree/master/packages/react)
-
-## [react-reconciler](https://github.com/facebook/react/tree/master/packages/react-reconciler)
+## React16后，例如：react16.3.2
 
 # 源码阅读边角料
 1. Object.freeze
