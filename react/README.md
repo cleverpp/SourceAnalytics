@@ -10,8 +10,7 @@
 1. Transaction
 2. 
 ### 参考
-1. [React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点如下：
-    
+1. [React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点如下：    
     1. 组件是一个ReactElement类型的对象，组件与组件的父子关系通过props.children来关联。
     2. ReactDOM.render(component,mountNode)，不同类型的component对应不同的React内部四大类封装组件，记为componentInstance。而后将其作为参数传入mountComponentIntoNode方法中，由此获得组件对应的HTML，记为变量markup。将真实的DOM的属性innerHTML设置为markup，即完成了DOM插入。
     3. 封装成四大类型组件（ReactEmptyComponent、ReactTextComponent、ReactDOMComponent、ReactCompositeComponent）的过程中，赋予了封装组件mountComponet方法， 执行该方法会触发组件的生命周期，从而解析出HTML
@@ -22,7 +21,8 @@
     3. ReactDOMComponent，实际注入的是ReactDOMComponent，不存在生命周期，最终插入到DOM中的是一些具有tag的元素<tag>tagContent</tag>
     4. ReactCompositeComponent，有生命周期。componentWillMount、render，componentDidMount。
 
-3. [
+3. [React源码解析(三):详解事务与更新队列](https://juejin.im/post/59cc4c4bf265da0648446ce0) 核心要点如下：
+    1. 
 
 ## React16后，例如：react16.3.2
 
