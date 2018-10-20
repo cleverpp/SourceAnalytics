@@ -7,9 +7,8 @@
 
 ## React16之前，例如：react15.4.2
 ### 核心概念
-1. Transaction
-2. 
-### 参考
+1. 
+### 参考及学习笔记
 1. [React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点如下：    
     1. 组件是一个ReactElement类型的对象，组件与组件的父子关系通过props.children来关联。
     2. ReactDOM.render(component,mountNode)，不同类型的component对应不同的React内部四大类封装组件，记为componentInstance。而后将其作为参数传入mountComponentIntoNode方法中，由此获得组件对应的HTML，记为变量markup。将真实的DOM的属性innerHTML设置为markup，即完成了DOM插入。
@@ -50,7 +49,42 @@
     ```
 
 3. [React源码解析(三):详解事务与更新队列](https://juejin.im/post/59cc4c4bf265da0648446ce0) 核心要点如下：
-    1. 
+    1. Transaction的作用:可以理解为一种中间件的设计模式，利用wrappers在anyMethod执行前和执行后插入一些功能。
+    ```
+    <pre>
+    *                       wrappers (injected at creation time)
+    *                                      +        +
+    *                                      |        |
+    *                    +-----------------|--------|--------------+
+    *                    |                 v        |              |
+    *                    |      +---------------+   |              |
+    *                    |   +--|    wrapper1   |---|----+         |
+    *                    |   |  +---------------+   v    |         |
+    *                    |   |          +-------------+  |         |
+    *                    |   |     +----|   wrapper2  |--------+   |
+    *                    |   |     |    +-------------+  |     |   |
+    *                    |   |     |                     |     |   |
+    *                    |   v     v                     v     v   | wrapper
+    *                    | +---+ +---+   +---------+   +---+ +---+ | invariants
+    * perform(anyMethod) | |   | |   |   |         |   |   | |   | | maintained
+    * +----------------->|-|---|-|---|-->|anyMethod|---|---|-|---|-|-------->
+    *                    | |   | |   |   |         |   |   | |   | |
+    *                    | |   | |   |   |         |   |   | |   | |
+    *                    | |   | |   |   |         |   |   | |   | |
+    *                    | +---+ +---+   +---------+   +---+ +---+ |
+    *                    |  initialize                    close    |
+    *                    +-----------------------------------------+
+    * </pre>
+
+    ```
+    2. setState的流程
+    ![](https://user-gold-cdn.xitu.io/2018/3/1/161df93690f3abac?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+    3. 将需要更新的组件放入dirtyComponents，如何处理dirtyComponents？（ReactUpdates.flushBatchedUpdates）
+        > flushBatchedUpdates方法循环遍历所有的dirtyComponents，又通过事务的形式调用runBatchedUpdates方法，因为源码较长所以在这里直接说明该方法所做的两件事：一是通过执行updateComponent方法来更新组件;二是若setState方法传入了回调函数则将回调函数存入callbackQueue队列。
+4. [React源码解析(四):事件系统](https://juejin.im/post/5a0cf54ff265da43333df2c4) 核心要点如下：  
+    1. React并不像原生事件一样将事件和DOM一一对应，而是将所有的事件都绑定在网页的document，通过统一的事件监听器处理并分发，找到对应的回调函数并执行。
+    2. React对事件进行统一而不是分散的存储与管理，捕获事件后内部生成合成事件提高浏览器的兼容度，执行回调函数后再进行销毁释放内存，从而大大提高网页的响应性能。
+      
 
 ## React16后，例如：react16.3.2
 
