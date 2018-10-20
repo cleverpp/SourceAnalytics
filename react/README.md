@@ -18,8 +18,36 @@
 2. [React源码解析(二):组件的类型与生命周期](https://juejin.im/post/59ca03b9518825177c60d10b) 核心要点如下：
     1. ReactEmptyComponent，实际注入的是ReactDOMEmptyComponent，不存在生命周期，最终插入到DOM中的是空。
     2. ReactTextComponent，实际注入的是ReactDOMTextComponent，不存在生命周期，最终插入到DOM中的是文本。
-    3. ReactDOMComponent，实际注入的是ReactDOMComponent，不存在生命周期，最终插入到DOM中的是一些具有tag的元素<tag>tagContent</tag>
-    4. ReactCompositeComponent，有生命周期。componentWillMount、render，componentDidMount。
+    3. ReactDOMComponent，实际注入的是ReactDOMComponent，不存在生命周期，最终插入到DOM中的是一些具有tag的元素```<tag>tagContent</tag>```
+    4. ReactCompositeComponent，有生命周期。componentWillMount、render，componentDidMount。其中父组件与子组件的生命周期的关系如下图：
+    ```
+    /**
+     * ------------------ The Life-Cycle of a Composite Component ------------------
+     *
+     * - constructor: Initialization of state. The instance is now retained.
+     *   - componentWillMount
+     *   - render
+     *   - [children's constructors]
+     *     - [children's componentWillMount and render]
+     *     - [children's componentDidMount]
+     *     - componentDidMount
+     *
+     *       Update Phases:
+     *       - componentWillReceiveProps (only called if parent updated)
+     *       - shouldComponentUpdate
+     *         - componentWillUpdate
+     *           - render
+     *           - [children's constructors or receive props phases]
+     *         - componentDidUpdate
+     *
+     *     - componentWillUnmount
+     *     - [children's componentWillUnmount]
+     *   - [children destroyed]
+     * - (destroyed): The instance is now blank, released by React and ready for GC.
+     *
+     * -----------------------------------------------------------------------------
+     */
+    ```
 
 3. [React源码解析(三):详解事务与更新队列](https://juejin.im/post/59cc4c4bf265da0648446ce0) 核心要点如下：
     1. 
