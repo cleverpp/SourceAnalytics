@@ -23,7 +23,6 @@
 4. ReactDOMComponent，会递归mountComponent，最终转化为普通html插入到DOM中。
 5. ReactCompositeComponent， 先执行生命周期componentWillMount和render，然后递归mountComponent，最后执行生命周期componentDidMount。
 #### 组件的更新 this.setState
-
 #### react diff
 
 ### 参考及学习笔记
@@ -109,9 +108,17 @@
 8. [React源码分析 - 组件更新与事务](https://juejin.im/post/5a92e234f265da4e6f1801e6)
 9. [React源码分析 - 生命周期](https://juejin.im/post/5a92e2d65188257a6426bad0)
 10. [React源码分析 - Diff算法](https://juejin.im/post/5aa163df518825557b4c4f0a)
-      
+11. [react源码剖析——（一）生命周期的管理艺术](https://www.jianshu.com/p/18523cdaf893)
+12. [react源码剖析——（二）解密setState机制](https://www.jianshu.com/p/0cdaafe2a26e)
+13. [react源码剖析——（三）不可思议的React diff算法](https://www.jianshu.com/p/ca44182828ae)
+14. [React源码剖析——（四）新引擎React Fiber](https://www.jianshu.com/p/420b5c030e98)
 
 ## React16后，例如：react16.3.2
+### 核心概念
+#### React Fiber
+
+### 参考及学习笔记
+1. 
 
 # 源码阅读边角料
 1. Object.freeze
