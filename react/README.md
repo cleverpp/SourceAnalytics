@@ -23,6 +23,7 @@
 4. ReactDOMComponent，会递归mountComponent，最终转化为普通html插入到DOM中。
 5. ReactCompositeComponent， 先执行生命周期componentWillMount和render，然后递归mountComponent，最后执行生命周期componentDidMount。
 #### 组件的更新 this.setState
+
 #### react diff
 
 ### 参考及学习笔记
@@ -106,7 +107,8 @@
 6. [React源码分析 - 组件初次渲染](https://juejin.im/post/5a92e02d6fb9a0633d71f7f7)
 7. [React源码分析 - 事件机制](https://juejin.im/post/5a92e120f265da4e9e307fea)
 8. [React源码分析 - 组件更新与事务](https://juejin.im/post/5a92e234f265da4e6f1801e6)
-7. [React源码分析 - 生命周期](https://juejin.im/post/5a92e2d65188257a6426bad0)
+9. [React源码分析 - 生命周期](https://juejin.im/post/5a92e2d65188257a6426bad0)
+10. [React源码分析 - Diff算法](https://juejin.im/post/5aa163df518825557b4c4f0a)
       
 
 ## React16后，例如：react16.3.2
