@@ -16,7 +16,19 @@
 4. ReactDOMComponent，会递归mountComponent，最终转化为普通html插入到DOM中。
 5. ReactCompositeComponent， 先执行生命周期componentWillMount和render，然后递归mountComponent，最后执行生命周期componentDidMount。
 #### 组件的更新 this.setState
+1. isBatchingUpdates状态(true/false）控制当前是否正在批处理，为true时将有变化的component push 到dirtyComponents。
+2. 执行事务FLUSH_BATCHED_UPDATES的close：flushBatchedUpdates: dirtyComponents.length>1 && runBatchedUpdates -> ReactReconciler.performUpdateIfNecessary  -> ReactCompositeComponent.performUpdateIfNecessary : this._pendingStateQueue && ReactCompositeComponent.updateComponent
+3. updateComponent :执行生命周期函数componentWillReceiveProps， 将state更新队列合并并置_processPendingState=null，然后再执行生命周期函数shouldComponentUpdate。
+4. shouldComponentUpdate返回true时才去真正执行更新(_performComponentUpdate)，否则只更新当前示例的props和state的值。
+5. _performComponentUpdate：执行生命周期函数componentWillUpdate、render后进行组件级别的diff(shouldUpdateReactComponent)，
+6. shouldUpdateReactComponent：判断组件类型是否一致（type、key均相同），一致则更新receiveComponent，否则先unmountComponent然后mountComponent新的组件。
+7. 递归子节点
+8. 最后执行父组件生命周期函数componentDidUpdate
+9. 执行事务RESET_BATCHED_UPDATES，将isBatchingUpdates = false。
 #### react diff
+1. tree diff ： 对树进行分层比较，两棵树只会对同一层次的节点进行比较。
+2. component diff ：shouldUpdateReactComponent，组件级别的diff，判断依据是ReactElement的type。
+2. element diff ：存在以下三种操作：INSERT_MARKUP（新），MOVE_EXISTING（可复用，位置发生变化），REMOVE_NODE（不可复用）
 
 ### 参考及学习笔记
 1. [React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点如下：    
