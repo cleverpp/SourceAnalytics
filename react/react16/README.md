@@ -1,13 +1,23 @@
 ## 基于React v16.3.2进行源码分析与学习
 ### 核心概念
 #### 重点源码
-1. ReactRoot， FiberNode
-2. ReactWork
-3. ReactFiber
-4. ReactFiberReconciler
-    1. createContainer
-    2. updateContainer
 #### 组件的挂载 ReactDOM.render
+```
+// 1. 创建了ReactRoot
+ReactRoot._internalRoot:FiberRoot = {
+    current:FiberNode {
+        tag:HostRoot,
+        stateNode:ReactRoot._internalRoot
+        ...
+    },
+    containerInfo:DOMContainer,
+    ...
+}
+// 2. 通过构建了Fiber tree 和 workInProgress tree
+
+// 3. 回溯处理effectTag
+```
+
 #### 组件的更新 this.setState
 #### 生命周期
 #### react diff
