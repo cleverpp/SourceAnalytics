@@ -22,10 +22,8 @@
     window.cordova.exec(success,fail,service,action,actionArgs)
   })
 ```
-## js如何调用android native
-
 ## js如何调用ios native
-1. jsToNativeModes有以下7中，一般用IFRAME_NAV
+1. jsToNativeModes有以下7种，一般用IFRAME_NAV
 ```
   jsToNativeModes = {
         IFRAME_NAV: 0,
@@ -152,3 +150,39 @@ if (bridgeMode === jsToNativeModes.WK_WEBVIEW_BINDING) {
         }
     },
     ```
+## js如何调用android native
+1. jsToNativeModes有以下2种,默认使用JS_OBJECT
+```
+  jsToNativeModes = {
+        PROMPT: 0,   // cordova重载了OnJsPrompt方法
+        JS_OBJECT: 1   // addjavascriptinterface（Android Webview的API），这样可以调用以@JavascriptInterface注解的java方法
+  },
+```
+2. 同ios一样，维护callback对象，key为callbackId，value为回调函数组成的对象；
+3. 处理actionArgs，首先必须是个数组，并将参数序列化argsJson = JSON.stringify(args)
+4. js向android发送消息
+    ```
+    var messages = nativeApiProvider.get().exec(bridgeSecret, service, action, callbackId, argsJson); // 
+    // If argsJson was received by Java as null, try again with the PROMPT bridge mode.
+    // This happens in rare circumstances, such as when certain Unicode characters are passed over the bridge on a Galaxy S2.  See CB-2666.
+    if (jsToNativeBridgeMode == jsToNativeModes.JS_OBJECT && messages === "@Null arguments.") {
+      androidExec.setJsToNativeBridgeMode(jsToNativeModes.PROMPT);
+      androidExec(success, fail, service, action, args);
+      androidExec.setJsToNativeBridgeMode(jsToNativeModes.JS_OBJECT);
+      return;
+    } else {
+      androidExec.processMessages(messages, true);
+    }
+    ```   
+   
+    1. 如果是JS_OBJECT方式，那么nativeApiProvider.get().exec= 安卓端源码中注解了@JavascriptInterface的 exec方法
+    2. 如果是PROMPT方式，那么nativeApiProvider.get().exec 为如下方法：
+      ```
+        exec: function(bridgeSecret, service, action, callbackId, argsJson) {
+          return prompt(argsJson, 'gap:'+JSON.stringify([bridgeSecret, service, action, callbackId]));
+        },
+      ```
+5. native向js发送消息：安卓会直接调用：androidExec.processMessages(messages, true); 最终通过解析messages来获得回传参数，并执行成功回调、失败回调
+## 参考
+1. [浅析 Cordova for iOS](http://zhenby.com/blog/2013/05/16/cordova-for-ios/)
+2. 
