@@ -1234,7 +1234,7 @@ platform.bootstrap && platform.bootstrap();
 // Wrap in a setTimeout to support the use-case of having plugin JS appended to cordova.js.
 // The delay allows the attached modules to be defined before the plugin loader looks for them.
 setTimeout(function() {
-    // YTY: cordova_plugin.js在银联框架内已经无用，所以无需等待加载cordova_plugin.js后再触发deviceready
+    // YTY: cordova_plugin.js在该框架内已经无用，所以无需等待加载cordova_plugin.js后再触发deviceready
     // pluginloader.load(function() {
     //     channel.onPluginsReady.fire();
     // });
