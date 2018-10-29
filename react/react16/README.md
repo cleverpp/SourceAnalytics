@@ -2,8 +2,8 @@
 ### 核心概念
 #### 重点源码
 #### 组件的挂载 ReactDOM.render
+1. 创建ReactRoot
 ```
-// 1. 创建了ReactRoot
 ReactRoot._internalRoot:FiberRoot = {
     current:FiberNode {
         tag:HostRoot,
@@ -13,12 +13,21 @@ ReactRoot._internalRoot:FiberRoot = {
     containerInfo:DOMContainer,
     ...
 }
-// 2. 通过构建了Fiber tree 和 workInProgress tree
-
-// 3. 回溯处理effectTag
 ```
+2. renderRoot 是reconciliation阶段，通过循环进行深度优先搜索（DFS）来构建了Fiber tree 和 workInProgress tree
+
+    1. performUnitOfWork从根节点（HostRoot）开始沿着子节点一直到无子节点
+    2. completeUnitOfWork从无子节点开始回溯，先回溯兄弟节点，再回溯父节点
+    3. 如果是兄弟节点，则继续执行performUnitOfWork。
+    4. 如果是父节点，则判断父节点是否有兄弟节点，有则执行3，否则继续执行4
+
+3. completeRoot 是提交阶段，根据收集到的effectTag，进行对应的操作。
+    1. commitBeforeMutationLifeCycles ：此处执行生命周期函数getSnapshotBeforeUpdate，此时尚未加载或更新到dom中
+    2. commitAllHostEffects : 此处根据effectTag决定执行 Placement, PlacementAndUpdate, Update, Deletion 等操作
+    3. commitLifeCycles ：此处执行生命周期componentDidMount 或 componentDidUpdate
 
 #### 组件的更新 this.setState
+
 #### 生命周期
 #### react diff
 
