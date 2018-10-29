@@ -97,9 +97,9 @@ if (bridgeMode === jsToNativeModes.WK_WEBVIEW_BINDING) {
     }
 ```
 6. ios端通过UIWebViewDelegate（iframe方式）或 NSURLProtocol拦截（xhr方式）方式接收到commondQueue后，执行插件的实际功能，然后怎么样向js发送消息呢？
-  1. ios原生支持native调用js，即通过UIWebView的stringByEvaluatingJavaScriptFromString方法
-  2. ios端执行完插件逻辑后，会调用iOSExec.nativeCallback
-  ```
+    1. ios原生支持native调用js，即通过UIWebView的stringByEvaluatingJavaScriptFromString方法
+    2. ios端执行完插件逻辑后，会调用iOSExec.nativeCallback
+    ```
     iOSExec.nativeCallback = function(callbackId, status, message, keepCallback) {
       return iOSExec.nativeEvalAndFetch(function() {
         var success = status === 0 || status === 1;
@@ -118,6 +118,37 @@ if (bridgeMode === jsToNativeModes.WK_WEBVIEW_BINDING) {
         isInContextOfEvalJs--;
       }
     };
-  ```
-  3. 最终调用的是cordova.callbackFromNative(callbackId, success, status, args, keepCallback)
-  
+    ```
+    3. 最终调用的是cordova.callbackFromNative(callbackId, success, status, args, keepCallback)
+    ```
+      /**
+     * Called by native code when returning the result from an action.
+     */
+    callbackFromNative: function(callbackId, success, status, args, keepCallback) {
+        var callback = cordova.callbacks[callbackId];
+        if (callback) {
+            if (success && status == cordova.callbackStatus.OK) {  // cordova.callbackStatus.OK = 1;
+                callback.success && callback.success.apply(null, args);
+            } else if (!success) {
+                /**
+                 * 遇到如下错误(status)以后，将status作为参数返回失败回调 fail(err), err.cordovaRetStatus 就是失败状态原因（status）
+                 *
+                 * CLASS_NOT_FOUND_EXCEPTION: 2,
+                   ILLEGAL_ACCESS_EXCEPTION: 3,
+                   INSTANTIATION_EXCEPTION: 4,
+                   MALFORMED_URL_EXCEPTION: 5,
+                   ...
+                 *
+                 */
+                this.errorRetStatus = status;
+
+                callback.fail && callback.fail.apply(null, args);
+            }
+
+            // Clear callback if not expecting any more results
+            if (!keepCallback) {
+                delete cordova.callbacks[callbackId];
+            }
+        }
+    },
+    ```
