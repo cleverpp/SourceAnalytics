@@ -38,7 +38,7 @@
         WK_WEBVIEW_BINDING: 6
     }
 ```
-2. cordova维护一个callback对象，key为callbackId，value为回调函数组成的数组
+2. cordova维护一个callback对象，key为callbackId，value为回调函数组成的对象
 ```
     if (successCallback || failCallback) {
         callbackId = service + cordova.callbackId++;  //cordovacallbackId=Math.floor(Math.random() * 2000000000)
@@ -96,4 +96,28 @@ if (bridgeMode === jsToNativeModes.WK_WEBVIEW_BINDING) {
         }
     }
 ```
-6. 猜测ios端接收到commondQueue后，执行插件的实际
+6. ios端通过UIWebViewDelegate（iframe方式）或 NSURLProtocol拦截（xhr方式）方式接收到commondQueue后，执行插件的实际功能，然后怎么样向js发送消息呢？
+  1. ios原生支持native调用js，即通过UIWebView的stringByEvaluatingJavaScriptFromString方法
+  2. ios端执行完插件逻辑后，会调用iOSExec.nativeCallback
+  ```
+    iOSExec.nativeCallback = function(callbackId, status, message, keepCallback) {
+      return iOSExec.nativeEvalAndFetch(function() {
+        var success = status === 0 || status === 1;
+        var args = convertMessageToArgsNativeToJs(message);  // 将CDVType类型的native数据转换为
+        cordova.callbackFromNative(callbackId, success, status, args, keepCallback);
+      });
+    };
+    
+    iOSExec.nativeEvalAndFetch = function(func) {
+      // This shouldn't be nested, but better to be safe.
+      isInContextOfEvalJs++;
+      try {
+        func();
+        return iOSExec.nativeFetchMessages();
+      } finally {
+        isInContextOfEvalJs--;
+      }
+    };
+  ```
+  3. 最终调用的是cordova.callbackFromNative(callbackId, success, status, args, keepCallback)
+  
