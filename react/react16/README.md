@@ -26,10 +26,25 @@ ReactRoot._internalRoot:FiberRoot = {
     2. commitAllHostEffects : 此处根据effectTag决定执行 Placement, PlacementAndUpdate, Update, Deletion 等操作
     3. commitLifeCycles ：此处执行生命周期componentDidMount 或 componentDidUpdate
 
-#### 组件的更新 this.setState
+![组件的挂载和更新](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/reactdom_render.png)
 
+#### 组件的更新 this.setState
+上图中的红色箭头线展示this.setState流程，与render的流程区别在于：setState的调用对象非根节点，node.return!==null，因此需要循环回归到根节点才开始执行requestWork。
 #### 生命周期
+1. reconiliation阶段
+
+    在beginWork执行时，会根据当前workInProgress.tag 执行对应的组件的方法，其中涉及到声明周期的只有updateClassComponent
+
+![reconiliation阶段的生命周期](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/lifecycle-reconcile.png)
+
+2. commint阶段
+
+    1. 在commitRoot的commitAllLifeCycles阶段，根据当前Fiber.tag来进行不同的处理，tag=ClassComponent时，如果是挂载则执行componentDidMount，更新执行componentDidUpdate
+    2. 在commitRoot的commitAllHostEffects阶段，如果当前操作是Deletion则执行commitDeletion，此处会执行生命周期componentWillUnmount
 #### react diff
+
+
+#### 异步渲染
 
 ### 参考及学习笔记
 1. [[译] React 16 带来了什么以及对 Fiber 的解释](https://juejin.im/post/59de1b2a51882578c70c0833)
