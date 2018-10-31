@@ -19,6 +19,9 @@
 2. Fiber Reconciliation :实现了一个基于优先级和requestIdleCallback的循环任务调度算法。更新异步化，可中断，可管理更新的优先级
 3. 主要数据结构：ReactElement、Fiber 构建的fiber tree 以及 workInProgress tree。（基于单链表的树结构）
 4. 生命周期发生变化
+    1. 增加了新生命周期：getDerivedStateFromProps、getSnapshotBeforeUpdate、componentDidCatch
+    2. componentWillMount、componentWillReceiveProps、componentWillUpdate变得不安全，不推荐使用了，后续版本中会废弃。
+5. 异步渲染：
 
 
 # 源码阅读边角料

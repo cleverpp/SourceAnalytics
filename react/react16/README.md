@@ -1,6 +1,5 @@
 ## 基于React v16.3.2进行源码分析与学习
 ### 核心概念
-#### 重点源码
 #### 组件的挂载 ReactDOM.render
 1. 创建ReactRoot
 ```
@@ -29,6 +28,7 @@ ReactRoot._internalRoot:FiberRoot = {
 ![组件的挂载和更新](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/reactdom_render.png)
 
 #### 组件的更新 this.setState
+
 上图中的红色箭头线展示this.setState流程，与render的流程区别在于：setState的调用对象非根节点，node.return!==null，因此需要循环回归到根节点才开始执行requestWork。
 #### 生命周期
 1. reconiliation阶段
@@ -39,12 +39,24 @@ ReactRoot._internalRoot:FiberRoot = {
 
 2. commint阶段
 
-    1. 在commitRoot的commitAllLifeCycles阶段，根据当前Fiber.tag来进行不同的处理，tag=ClassComponent时，如果是挂载则执行componentDidMount，更新执行componentDidUpdate
+    1. 在commitRoot的commitBeforeMutationLifecycles阶段，tag=ClassComponent时会执行生命周期函数getSnapshotBeforeUpdate。
     2. 在commitRoot的commitAllHostEffects阶段，如果当前操作是Deletion则执行commitDeletion，此处会执行生命周期componentWillUnmount
+    3. 在commitRoot的commitAllLifeCycles阶段，根据当前Fiber.tag来进行不同的处理，tag=ClassComponent时，如果是挂载则执行componentDidMount，更新执行componentDidUpdate，报错则执行componentDidCatch。
 #### react diff
+主要在reconcileChildFibers阶段进行diff
 
+1. 单个元素，调用reconcileSingleElement
+    1. key值不同，则deleteChild，effectTag为Deletion。
+    2. key相等且type相等，删除旧子节点的兄弟节点，复用旧节点并返回。
+    3. key相等且type不相等，删除旧子节点及兄弟节点，跳出循环，不能复用，则直接新建Fiber实例，并返回
+2. 单个Portal元素，调用reconcileSinglePortal
+3. string或者number，调用reconcileSingleTextNode
+4. Array（Fragment），调用reconcileChildrenArray
+
+注：2，3，4 同1的逻辑类似。
 
 #### 异步渲染
+
 
 ### 参考及学习笔记
 1. [[译] React 16 带来了什么以及对 Fiber 的解释](https://juejin.im/post/59de1b2a51882578c70c0833)
@@ -64,7 +76,7 @@ ReactRoot._internalRoot:FiberRoot = {
     componentWillUnmount
     ```
     2. fiber tree 以及 workInProgress tree
-4. [React16源码之React Fiber架构](https://juejin.im/post/5b7016606fb9a0099406f8de)
+4. [React16源码之React Fiber架构](https://juejin.im/post/5b7016606fb9a0099406f8de) 【推荐】
 5. [React Fiber架构](https://zhuanlan.zhihu.com/p/37095662)
 6. [关于React v16.3 新生命周期](https://juejin.im/post/5aca20c96fb9a028d700e1ce)
 
