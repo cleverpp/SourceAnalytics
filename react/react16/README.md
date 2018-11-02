@@ -56,7 +56,10 @@ ReactRoot._internalRoot:FiberRoot = {
 注：2，3，4 同1的逻辑类似。
 
 #### 异步渲染
-
+粗略看了下流程，有以下几个点：
+1. 16.3.2版本中尚未提供异步渲染功能的API
+2. 梳理流程中，当workloop中shouldYield返回true【即当前浏览器时间无空闲时间】时，并没有发现会重新执行该任务的代码
+![异步渲染](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/asyncmode.png)
 
 ### 参考及学习笔记
 1. [[译] React 16 带来了什么以及对 Fiber 的解释](https://juejin.im/post/59de1b2a51882578c70c0833)
@@ -82,3 +85,6 @@ ReactRoot._internalRoot:FiberRoot = {
 
 ### 其它
 1. packages/shared/ReactDOMFrameScheduling.js ：react自己实现了requestIdleCallback
+    1. [requestAnimationFrame 和 requestIdleCallback](https://csbun.github.io/blog/2015/09/raf-and-ric/)
+    2. [你应该知道的requestIdleCallback](https://juejin.im/post/5ad71f39f265da239f07e862)
+    3. [Using requestIdleCallback](https://developers.google.com/web/updates/2015/08/using-requestidlecallback)
