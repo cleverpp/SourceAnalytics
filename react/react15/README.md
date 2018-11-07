@@ -30,6 +30,16 @@
 2. component diff ：shouldUpdateReactComponent，组件级别的diff，判断依据是ReactElement的type。
 2. element diff ：存在以下三种操作：INSERT_MARKUP（新），MOVE_EXISTING（可复用，位置发生变化），REMOVE_NODE（不可复用）
 
+### 性能优化
+1. [React 性能优化，你需要知道的几个点](https://www.jianshu.com/p/333f390f2e84)
+2. 深入React技术栈-2.6 组件性能优化-如何防止不必要的渲染。
+    1. 纯函数，拆分组件为子组件，进而对组件做更细粒度的控制，让方法或组件更加专注、体积更小，更独立，更可复用和可测试性。
+    2. PureRender，原理是重新实现了shouldComponentUpdate，对props和state进行了浅比较来优化。react提供了PureComponent来实现这个优化。
+    3. 优化PureRender，避免以下场景：1）直接为props设置为对象或数组，这样就算值没有发生改变，但是引用的地址会发生改变，相当于每次渲染该组件都新建了一个对象或数组。2）props方法使用bind绑定this或箭头函数，这样也是每次都会生成一个新的匿名函数，建议在构造函数中绑定。
+    4. 使用immutable.js。
+    5. 列表项要设置唯一不变的key，不要简单设置为索引或随机值。
+    6. 性能检测工具：react-addons-perf
+
 ### 参考及学习笔记
 1. [React源码解析(一):组件的实现与挂载](https://juejin.im/post/5983dfbcf265da3e2f7f32de) 核心要点如下：    
     1. 组件是一个ReactElement类型的对象，组件与组件的父子关系通过props.children来关联。

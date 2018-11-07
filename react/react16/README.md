@@ -61,6 +61,11 @@ ReactRoot._internalRoot:FiberRoot = {
 2. 梳理流程中，当workloop中shouldYield返回true【即当前浏览器时间无空闲时间】时，并没有发现会重新执行该任务的代码
 ![异步渲染](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/asyncmode.png)
 
+### 性能优化
+1. [Profiling Components with the Chrome Performance Tab](https://reactjs.org/docs/optimizing-performance.html#profiling-components-with-the-chrome-performance-tab)
+2. [Debugging React performance with React 16 and Chrome Devtools.](https://building.calibreapp.com/debugging-react-performance-with-react-16-and-chrome-devtools-c90698a522ad?gi=412fbb22203)
+
+
 ### 参考及学习笔记
 1. [[译] React 16 带来了什么以及对 Fiber 的解释](https://juejin.im/post/59de1b2a51882578c70c0833)
 2. [浅谈React16框架 - Fiber](https://zhuanlan.zhihu.com/p/43394081)
