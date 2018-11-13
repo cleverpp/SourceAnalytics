@@ -52,7 +52,7 @@ let unsubscribe = store.subscribe(() => { //监听状态的变化
 
 6. 源码注解
 ```
-// 执行applyMiddleware(thunk)后返回了俩层嵌套函数，其中middlewares=[thunk]
+// 执行applyMiddleware(m1,m2)后返回了俩层嵌套函数，其中middlewares=[m1,m2]
 export default function applyMiddleware(...middlewares) {
   return createStore => (...args) => {
     // 创建store，此时dispatch未增强
@@ -94,22 +94,189 @@ var m1 = store=>next=>action=>{console.log('m1 begin'); next(action);console.log
 var m2 = store=>next=>action=>{console.log('m2 begin'); next(action);console.log('m2 end')};
 
 var enhanceStore = applyMiddleware(m1,m2)(createStore)();
-
+// 示例1，演示洋葱模型
 enhanceStore.dispatch({type:'test',params:{a:1}})
+
+var m3 = ({dispatch,getState})=>next=>action=>{ console.log('m3 begin'); if(typeof action === 'function') {return action(dispatch,getState)};   return next(action); console.log('m3 end');}
+
+enhanceStore = applyMiddleware(m1,m2,m3)(createStore)();
+// 示例2，演示return类型
+enhanceStore.dispatch({type:'test',params:{a:1}})
+
+// 示例3，演示action为函数时
+function action(dispatch,getState){ dispatch({type:'test',params:{a:1}});}
+enhanceStore.dispatch(action);
 ```
-执行结果如下：（符合洋葱模型）
+执行结果如下：
 ```
 m1 begin
 m2 begin
 orignal dispatch
 m2 end
 m1 end
+
+m1 begin
+m2 begin
+m3 begin
+orignal dispatch   // return了，所以不会执行m3 end.
+m2 end
+m1 end
+
+m1 begin
+m2 begin
+m3 begin
+m1 begin
+m2 begin
+m3 begin
+orignal dispatch
+m2 end
+m1 end
+m2 end
+m1 end
+
+```
+
+### combineReducers
+1. 执行combineReducers(reducers)得到的是个combination(state = {}, action)，该函数返回一个以reducer函数名作为其属性，reducer执行结果作为其值的一个对象，即全局state
+2. 每一个action，都会被所有的reducer函数执行，且注意action是对象引用，因此如果其中一个reducer改变了action，会影响后续的reducer
+3. 以下源码去掉了一些不影响逻辑的代码，并加上了注释
+```
+export default function combineReducers(reducers) {
+  const reducerKeys = Object.keys(reducers)  // reducers是一个对象，reducerKeys是每一个reducer函数名
+  const finalReducers = {}
+  // for循环进行了浅copy，将reducers复制到finalReducers
+  for (let i = 0; i < reducerKeys.length; i++) {
+    const key = reducerKeys[i]
+
+    if (typeof reducers[key] === 'function') {
+      finalReducers[key] = reducers[key]
+    }
+  }
+  const finalReducerKeys = Object.keys(finalReducers)
+
+  return function combination(state = {}, action) {
+
+    let hasChanged = false
+    const nextState = {}
+    for (let i = 0; i < finalReducerKeys.length; i++) {
+      const key = finalReducerKeys[i]
+      const reducer = finalReducers[key]
+      const previousStateForKey = state[key] // 储存当前store中的state状态
+      const nextStateForKey = reducer(previousStateForKey, action) // 执行reducer函数得到新state
+      if (typeof nextStateForKey === 'undefined') {
+        const errorMessage = getUndefinedStateErrorMessage(key, action)
+        throw new Error(errorMessage)
+      }
+      nextState[key] = nextStateForKey  // store中的state对象的属性即为reducer函数名
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey  // hasChanged只要循环中有一次reducer产生了新的state则为true
+    }
+    return hasChanged ? nextState : state
+  }
+}
 ```
 
 ### createStore
+1. 第二个参数默认为preloadedState，如果为函数，例如applyMiddleware(thunk)，则返回的是使用中间件增强过的store
+    ```
+      if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
+        enhancer = preloadedState
+        preloadedState = undefined
+      }
 
-### combineReducers
+      if (typeof enhancer !== 'undefined') {
+        if (typeof enhancer !== 'function') {
+          throw new Error('Expected the enhancer to be a function.')
+        }
+
+        return enhancer(createStore)(reducer, preloadedState)
+      }
+    ```
+2. 由dispatch({ type: ActionTypes.INIT })开始，对state tree进行初始化
+3. dispatch，每一次dispatch执行都会执行所有的reducer，不管状态是否变化，如果有订阅callback，均会执行。
+    ```
+    function dispatch(action) {
+        if (!isPlainObject(action)) {   //仅支持普通对象，不支持Promise, an Observable, a thunk, or something else
+          throw new Error(
+            'Actions must be plain objects. ' +
+              'Use custom middleware for async actions.'
+          )
+        }
+
+        if (typeof action.type === 'undefined') {
+          throw new Error(
+            'Actions may not have an undefined "type" property. ' +
+              'Have you misspelled a constant?'
+          )
+        }
+
+        if (isDispatching) { // 当前是否正在处理中，这个检查主要是为了避免在reducer中执行dispatch的情况
+          throw new Error('Reducers may not dispatch actions.')
+        }
+
+        try {
+          isDispatching = true
+
+          // currentReducer 即combineReducers执行后返回的combination(state = {}, action)函数
+          currentState = currentReducer(currentState, action)
+        } finally {
+          isDispatching = false
+        }
+
+        const listeners = (currentListeners = nextListeners)
+        // 如果有使用store.subscribe订阅callback，则执行callback
+        for (let i = 0; i < listeners.length; i++) {
+          const listener = listeners[i]
+          listener()
+        }
+
+        return action
+      }
+    ```
+
+## middleware
+### react-thunk
+### react-saga
 
 ## react-redux
+```
+// app.js
+  ReactDOM.render(
+      <Provider store={store}>
+        <Component />
+      </Provider>,
+    document.getElementById('root')
+  )
+
+
+// xxxContainer.js
+import React from 'react';
+import {connect} from 'react-redux';
+// v4 新增
+import {withRouter} from 'react-router-dom'
+//page
+import Page from 'Page.jsx';
+
+function mapStateToProps(state, ownProps) {
+  return {
+    a: state.a,
+    b: state.b
+  }
+}
+
+function mapDispatchToProps(dispatch, ownProps) {
+  return {
+    setA: (params) => dispatch(actionCreator(params)),
+    setB: (params) => dispatch(actionCreator(params))
+  }
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AllCoupon));
+
+```
+### Provider
+一个React组件。
+
+### connect
 
 ## 参考
+1. 深入React技术栈
