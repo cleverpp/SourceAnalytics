@@ -319,6 +319,9 @@ export default createProvider()
 ```
 
 ### connect
+1. connect接受接受4个参数：mapStateToProps，mapDispatchToProps，mergeProps，extraOptions。
+2.
+
 
 ## 参考
 1. 深入React技术栈
