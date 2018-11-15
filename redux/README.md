@@ -274,7 +274,49 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AllCoupon
 
 ```
 ### Provider
-一个React组件。
+一个React组件，使用了[Legacy Context](https://reactjs.org/docs/legacy-context.html),
+这样任意子组件只需定义contextTypes即可已获取到store。
+```
+export function createProvider(storeKey = 'store', subKey) {
+    const subscriptionKey = subKey || `${storeKey}Subscription`
+
+    class Provider extends Component {
+        getChildContext() {
+          return { [storeKey]: this[storeKey], [subscriptionKey]: null }
+        }
+
+        constructor(props, context) {
+          super(props, context)
+          this[storeKey] = props.store;  //获取props.store并挂载到当前实例
+        }
+
+        render() {
+          return Children.only(this.props.children)  // provider仅接受一个子组件
+        }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      Provider.prototype.componentWillReceiveProps = function (nextProps) {
+        if (this[storeKey] !== nextProps.store) {
+          warnAboutReceivingStore()
+        }
+      }
+    }
+
+    Provider.propTypes = {
+        store: storeShape.isRequired,
+        children: PropTypes.element.isRequired,
+    }
+    Provider.childContextTypes = {
+        [storeKey]: storeShape.isRequired,
+        [subscriptionKey]: subscriptionShape,
+    }
+
+    return Provider
+}
+
+export default createProvider()
+```
 
 ### connect
 
