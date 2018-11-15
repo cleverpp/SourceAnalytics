@@ -275,7 +275,7 @@ export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AllCoupon
 ```
 ### Provider
 一个React组件，使用了[Legacy Context](https://reactjs.org/docs/legacy-context.html),
-这样任意子组件只需定义contextTypes即可已获取到store。
+这样任意子组件只需定义contextTypes即可以获取到store。
 ```
 export function createProvider(storeKey = 'store', subKey) {
     const subscriptionKey = subKey || `${storeKey}Subscription`
@@ -320,8 +320,20 @@ export default createProvider()
 
 ### connect
 1. connect接受接受4个参数：mapStateToProps，mapDispatchToProps，mergeProps，extraOptions。
-2.
-
+2. mapStateToProps: 函数，返回的对象是从redux的state提取的，并把它当做props传给当前组件。
+3. mapDispatchToProps：函数(也可以是对象)，返回的对象是能改变redux的state的方法（即dispatch(action)），并把它当做props传给当前组件。
+4. connect最终返回的是一个高阶组件(HOC)，该高阶组件定义了contextTypes可以获取到Provider中提供的store。
+    1. construct
+        1. 传递store.getState()到mapStateToProps(state,ownProps),获得想要传递到目标组件的stateProps
+        2. 传递store.dispatch到mapDispatchToProps(dispatch,ownProps)，获得想要传递到目标组件的dispatchProps
+        3. mergeProps(stateProps, dispatchProps, ownProps)合并三种props并传递给目标组件，即wrapperdComponent。
+        4. 注册subscription，并使用legacy context的方式传递subscription给任意子组件
+    2. render：传递合并后的props到WrappedComponent
+        ```
+        return createElement(WrappedComponent, this.addExtraProps(selector.props))
+        ```
+    3. componentDidMount
+        1. this.store.subscribe(this.onStateChange) 注册监听store的变化
 
 ## 参考
 1. 深入React技术栈
