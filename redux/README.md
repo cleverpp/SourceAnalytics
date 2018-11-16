@@ -326,7 +326,7 @@ export default createProvider()
     1. construct
         1. 传递store.getState()到mapStateToProps(state,ownProps),获得想要传递到目标组件的stateProps
         2. 传递store.dispatch到mapDispatchToProps(dispatch,ownProps)，获得想要传递到目标组件的dispatchProps
-        3. mergeProps(stateProps, dispatchProps, ownProps)合并三种props并传递给目标组件，即wrapperdComponent。
+        3. mergeProps(stateProps, dispatchProps, ownProps)合并三种props并传递给目标组件，即WrappedComponent。
         4. 注册subscription，并使用legacy context的方式传递subscription给任意子组件
     2. render：传递合并后的props到WrappedComponent
         ```
@@ -334,6 +334,12 @@ export default createProvider()
         ```
     3. componentDidMount
         1. this.store.subscribe(this.onStateChange) 注册监听store的变化
+        2. 再一次获取store.getState()并计算最新的props
+    4. onStateChange
+        1. 再一次获取store.getState()并计算最新的props
+        2. 通知订阅者
+        3. 调用this.setState({})，主要目的是触发再次调用render，使得新的props可以传递给WrappedComponent
+    5. componentWillReceiveProps： 再一次获取store.getState()并计算最新的props
 
 ## 参考
 1. 深入React技术栈
