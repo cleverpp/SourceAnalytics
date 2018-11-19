@@ -233,10 +233,6 @@ export default function combineReducers(reducers) {
       }
     ```
 
-## middleware
-### react-thunk
-### react-saga
-
 ## react-redux
 ```
 // app.js
