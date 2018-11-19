@@ -337,5 +337,12 @@ export default createProvider()
         3. 调用this.setState({})，主要目的是触发再次调用render，使得新的props可以传递给WrappedComponent
     5. componentWillReceiveProps： 再一次获取store.getState()并计算最新的props
 
+## 更多
+1. redux-saga
+2. react-router-redux（for react-router 2.x， 3.x）  或  connected-react-router （for react-router 4.x）
+3. 高阶reducer解决以下问题：reducer的复用、reducer的增强
+4. 表单问题：redux-form-utils、redux-form
+5. redux性能优化：1）利用纯函数的缓存特性，减少不必要的计算。2) 数据Immutable，redux-immutable
+
 ## 参考
 1. 深入React技术栈
