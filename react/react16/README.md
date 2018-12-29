@@ -45,15 +45,20 @@ ReactRoot._internalRoot:FiberRoot = {
 #### react diff
 主要在reconcileChildFibers阶段进行diff
 
-1. 单个元素，调用reconcileSingleElement
+1. 新子节点是单个元素，调用reconcileSingleElement，循环旧子节点，将旧子节点与新子节点进行比较：
     1. key值不同，则deleteChild，effectTag为Deletion。
     2. key相等且type相等，删除旧子节点的兄弟节点，复用旧节点并返回。
     3. key相等且type不相等，删除旧子节点及兄弟节点，跳出循环，不能复用，则直接新建Fiber实例，并返回
 2. 单个Portal元素，调用reconcileSinglePortal
 3. string或者number，调用reconcileSingleTextNode
-4. Array（Fragment），调用reconcileChildrenArray
-
-注：2，3，4 同1的逻辑类似。
+4. Array（Fragment），调用reconcileChildrenArray，循环旧子节点和新子节点，进行比较：
+    1. updateSlot：1）key值不同，返回null；2）key值相同，type相同，复用旧节点并返回；3）key值相同，type不同，新建Fiber实例并返回。
+    2. placeChild：1）复用旧节点，旧节点的位置index小于上一次处理的索引lastPlacedIndex，则当前Fiber的effectTag=Placement，即需要移动；
+    2）复用旧节点，旧节点的位置的位置index大于或等于上一次处理的索引lastPlacedIndex，则旧节点位置保持不变，且lastPlacedIndex=oldIndex；
+    3）创建的新Fiber，则新Fiber的effectTag=Placement，需要插入。返回当前lastPlacedIndex。
+    3. mapRemainingChildren：将所有旧节点存在map中，如果有key值，则建立的是<key,fiber节点>，否则建立的是<index(节点的索引位置）,fiber节点>
+    4. updateElement：索引或key值相同，type相同则复用旧节点，否则新建fiber
+    ![react-diff](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/react-diff.png)
 
 #### 异步渲染
 粗略看了下流程，有以下几个点：
