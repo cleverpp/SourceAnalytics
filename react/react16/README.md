@@ -58,6 +58,7 @@ ReactRoot._internalRoot:FiberRoot = {
     3）创建的新Fiber，则新Fiber的effectTag=Placement，需要插入。返回当前lastPlacedIndex。
     3. mapRemainingChildren：将所有旧节点存在map中，如果有key值，则建立的是<key,fiber节点>，否则建立的是<index(节点的索引位置）,fiber节点>
     4. updateElement：索引或key值相同，type相同则复用旧节点，否则新建fiber
+
 ![react-diff](https://github.com/cleverpp/SourceAnalytics/blob/master/react/react16/images/react-diff.png)
 
 #### 异步渲染
