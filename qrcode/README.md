@@ -2,6 +2,10 @@
 1. [qrcode.min.js](https://github.com/davidshimjs/qrcodejs)
 2. [jQuery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode)
 
+# qrcode生成原理
+1. [二维码（QR code）基本结构及生成原理](https://blog.csdn.net/u012611878/article/details/53167009)
+2. [QRCode二维码总结](https://blog.csdn.net/liulina603/article/details/42099121)
+
 ## qrcode.min.js
 ### 基本介绍
 1. qrcode.min.js 是生成二维码的库文件，支持跨浏览器（兼容SVG、HTML5 Canvas 和 Table Tag），无外部依赖
@@ -33,15 +37,15 @@
 ### 原理分析
 1. 二维码生成算法
     1. 矩阵式二维码，码制为QRCode（Quick-Response code），解码速度快。
-    2. [二维码（QR code）基本结构及生成原理](https://blog.csdn.net/u012611878/article/details/53167009)
-    3. QR码符号共有40种规格的矩阵，_getTypeNumber根据目标文本长度及纠错级别QRErrorCorrectLevel确定规格。
-    4. QRCodeModel.addData，对目标文本进行编码:QR8bitByte
-    5. QRCodeModel.make
+    2. QR码符号共有40种规格的矩阵，_getTypeNumber根据目标文本长度及纠错级别QRErrorCorrectLevel确定规格。
+    3. QRCodeModel.addData，对目标文本进行编码:QR8bitByte（将每个字符进行utf8编码并加上了零宽不折行空格(U+FEFF,65279)）
+    4. QRCodeModel.make
         - getBestMaskPattern 选择最优的掩码，
         - setupPositionProbePattern 设置位置探测图形，协助扫描软件定位QR码并变换坐标系，让QR码在任意角度被扫描。
         - setupPositionAdjustPattern 设置校正图形，用于进一步校正坐标系，校正标识的数量取决于版本。
         - setupTimingPattern 设置定位图形
-        - setupTypeInfo、setupTypeNumber 设置格式和版本信息
+        - setupTypeInfo 设置格式信息
+        - setupTypeNumber 设置版本信息，只有规格7及以上才有版本信息
         - QRCodeModel.createData 将目标文本生成对应的数据和纠错码字
         - mapData：应用掩码，使得二维码图形中的深色和浅色（黑色和白色）区域能够比率最优的分布，使得二维码图形中的深色和浅色（黑色和白色）区域能够比率最优的分布
 ![二维码构成](https://github.com/cleverpp/SourceAnalytics/blob/master/qrcode/qrcode-zn.jpg)
