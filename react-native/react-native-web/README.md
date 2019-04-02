@@ -20,30 +20,12 @@ if (Platform.OS === 'web') {
 ```
 ### AppRegistry
 1. AppRegistry.registerComponent
-  ```
-  static registerComponent(appKey: string, componentProvider: ComponentProvider): string {
-    runnables[appKey] = {
-      getApplication: appParameters =>
-        getApplication(
-          componentProviderInstrumentationHook(componentProvider),
-          appParameters ? appParameters.initialProps : emptyObject,
-          wrapperComponentProvider && wrapperComponentProvider(appParameters)
-        ),
-      run: appParameters =>
-        renderApplication(
-          componentProviderInstrumentationHook(componentProvider),
-          appParameters.initialProps || emptyObject,
-          appParameters.rootTag,
-          wrapperComponentProvider && wrapperComponentProvider(appParameters),
-          appParameters.callback
-        )
-    };
-    return appKey;
-  }
-  ```
-  那么执行完AppRegistry.registerComponent(appName, () => App)后，得到一个runnables[appName]对象，该对象有两个函数属性getApplication、run。
+
+    执行完该函数后，得到一个runnables[appName]对象，该对象有两个函数属性getApplication、run。
   
 2. AppRegistry.runApplication
+
+    
 
 ## 以View组件为例
 
