@@ -86,8 +86,43 @@ export default class AppRegistry {
     2. 函数体分析
         - renderFn即 ReactDOM.render 或 ReactDOM.hydrate
         - AppContainer组件：使用了[Legacy Context](https://react.docschina.org/docs/legacy-context.html),其属性rootTag可以实现跨组件传递，它的任何一层的子组件可以通过定义contextTypes来获取rootTag。
+            ```
+            render() {
+                const { children, WrapperComponent } = this.props;
+                let innerView = (
+                    <View
+                        children={children}
+                        key={this.state.mainKey}
+                        pointerEvents="box-none"
+                        style={styles.appContainer}
+                    />
+                );
 
-## 以View组件为例
+                if (WrapperComponent) {
+                    innerView = <WrapperComponent>{innerView}</WrapperComponent>;
+                }
+
+                return (
+                    <View pointerEvents="box-none" style={styles.appContainer}>
+                        {innerView}
+                    </View>
+                );
+            }
+            ```
+
+综上分析，执行完index.js文件的内容后，实际上我们得到大概是这样的内容：
+```
+ <View pointerEvents="box-none" style={styles.appContainer}>
+     <View
+        children={<App/>}
+        key={this.state.mainKey}
+        pointerEvents="box-none"
+        style={styles.appContainer}
+      />
+ </View>
+```
+## 以View组件为例，分析组件的实现
+
 
 ## 如何扩展
 
