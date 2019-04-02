@@ -121,8 +121,15 @@ export default class AppRegistry {
       />
  </View>
 ```
-## 以View组件为例，分析组件的实现
-
+## 组件及API的实现（src/index.js）
+分以下几种类型：
+1. top-level API，例如：createElement、render 等
+2. modules
+3. APIs，即已实现的APIs
+4. components，即已实现的components
+5. propTypes
+6. compat (components)，即未实现的components，例如：DatePickerIOS，对于这种组件只提供了不会报错的最简组件实现UnimplementedView
+7. compat (apis)，即尉氏县的APIs，例如：AlertIOS，对于这种API只是个emptyObject
 
 ## 如何扩展
 
