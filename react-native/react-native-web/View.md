@@ -69,4 +69,4 @@ Component.prototype.componentDidMount = safeOverride(
 ```
 其中safeOverride(original,next)做的事情是，如果original存在则先执行original再执行next，否则只执行next
 
-observer(this)，该函数实际使用了[window.ResizeObserver](https://zhuanlan.zhihu.com/p/41418813)或_handleLayout来监听该组件对应的DOM元素的resize变化，发生了变化则执行onLayout({nativeEvent: { layout: {x, y, width, height}}})
+observer(this)，该函数实际使用了[window.ResizeObserver](https://zhuanlan.zhihu.com/p/41418813)和_handleLayout来监听该组件对应的DOM元素的resize变化，发生了变化则执行onLayout({nativeEvent: { layout: {x, y, width, height}}})
