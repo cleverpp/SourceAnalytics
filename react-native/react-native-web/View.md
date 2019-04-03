@@ -52,7 +52,9 @@ const UIManager = {
 其中findNodeHandle是调用了ReactDOM.findDOMNode(component)，找到当前组件挂载后所对应的dom元素， 然后调用该元素的原生focus方法。
 
 ## applyLayout
-对组件的生命周期componentDidMount、componentDidUpdate、componentWillUnmount进行了处理。以componentDidMount为例：
+对组件的生命周期componentDidMount、componentDidUpdate、componentWillUnmount进行了增强，从而可以处理onLayout属性（当组件挂载或者布局变化的时候调用）。
+
+以componentDidMount为例：
 ```
 Component.prototype.componentDidMount = safeOverride(
     componentDidMount,
@@ -67,4 +69,4 @@ Component.prototype.componentDidMount = safeOverride(
 ```
 其中safeOverride(original,next)做的事情是，如果original存在则先执行original再执行next，否则只执行next
 
-如果View组件有onLayout属性（当组件挂载或者布局变化的时候调用），则observer(this)，该函数实际使用了[window.ResizeObserver](https://zhuanlan.zhihu.com/p/41418813)或_handleLayout来监听该组件对应的DOM元素的resize变化，发生了变化则执行onLayout({nativeEvent: { layout: {x, y, width, height}}})
+observer(this)，该函数实际使用了[window.ResizeObserver](https://zhuanlan.zhihu.com/p/41418813)或_handleLayout来监听该组件对应的DOM元素的resize变化，发生了变化则执行onLayout({nativeEvent: { layout: {x, y, width, height}}})
