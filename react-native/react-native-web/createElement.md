@@ -60,3 +60,19 @@ const propsToAccessibilityComponent = (props: Object = emptyObject) => {
 ```
 const domProps = createDOMProps(Component, props);
 ```
+在createDOMProps逻辑中
+1. 处理无障碍相关的属性转化
+2. 处理disabled
+3. 处理是否可focus
+4. 处理style【重点】
+  ```
+  const { className, style } = styleResolver(reactNativeStyle);  // 核心代码
+  if (className && className.constructor === String) {
+    domProps.className = props.className ? `${props.className} ${className}` : className;
+  }
+  if (style) {
+    domProps.style = style;
+  }
+  ```
+  其中styleResolver(reactNativeStyle)=
+5. nativeID转化为web元素的id
