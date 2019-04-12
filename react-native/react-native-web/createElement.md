@@ -66,6 +66,16 @@ const domProps = createDOMProps(Component, props);
 3. 处理是否可focus
 4. 处理style【重点】
   ```
+  const reactNativeStyle = [
+    component === 'a' && resetStyles.link,
+    component === 'button' && resetStyles.button,
+    role === 'heading' && resetStyles.heading,
+    component === 'ul' && resetStyles.list,
+    role === 'button' && !disabled && resetStyles.ariaButton,
+    pointerEvents && pointerEventsStyles[pointerEvents],
+    providedStyle,
+    placeholderTextColor && { placeholderTextColor }
+  ];
   const { className, style } = styleResolver(reactNativeStyle);  // 核心代码
   if (className && className.constructor === String) {
     domProps.className = props.className ? `${props.className} ${className}` : className;
@@ -75,5 +85,23 @@ const domProps = createDOMProps(Component, props);
   }
   ```
   其中styleResolver(reactNativeStyle)=(new ReactNativeStyleResolver).resolve(reactNativeStyle)
+  ```
+    const flatArray = flattenArray(style);
+    let isArrayOfNumbers = true;
+    let cacheKey = '';
+    for (let i = 0; i < flatArray.length; i++) {
+      const id = flatArray[i];
+      if (typeof id !== 'number') {
+        isArrayOfNumbers = false;
+      } else {
+        if (isArrayOfNumbers) {
+          cacheKey += (id + '-');
+        }
+        this._injectRegisteredStyle(id);
+      }
+    }
+    const key = isArrayOfNumbers ? createCacheKey(cacheKey) : null;
+    return this._resolveStyleIfNeeded(flatArray, key);
+  ```
   
 5. nativeID转化为web元素的id
