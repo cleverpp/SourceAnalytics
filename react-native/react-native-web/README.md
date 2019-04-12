@@ -131,6 +131,10 @@ export default class AppRegistry {
 6. compat (components)，即未实现的components，例如：DatePickerIOS，对于这种组件只提供了不会报错的最简组件实现UnimplementedView
 7. compat (apis)，即尉氏县的APIs，例如：AlertIOS，对于这种API只是个emptyObject
 
+### [View](https://github.com/cleverpp/SourceAnalytics/blob/master/react-native/react-native-web/View.md)
+### [StyleSheet](https://github.com/cleverpp/SourceAnalytics/blob/master/react-native/react-native-web/StyleSheet.md)
+### [createElement](https://github.com/cleverpp/SourceAnalytics/blob/master/react-native/react-native-web/createElement.md)
+
 ## 如何扩展
 
 
