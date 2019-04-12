@@ -70,3 +70,58 @@ Component.prototype.componentDidMount = safeOverride(
 其中safeOverride(original,next)做的事情是，如果original存在则先执行original再执行next，否则只执行next
 
 observer(this)，该函数实际使用了[window.ResizeObserver](https://zhuanlan.zhihu.com/p/41418813)和_handleLayout来监听该组件对应的DOM元素的resize变化，发生了变化则执行onLayout({nativeEvent: { layout: {x, y, width, height}}})
+```
+Component.prototype._handleLayout = function() {
+    const layout = this._layoutState;
+    const { onLayout } = this.props;
+
+    if (onLayout) {
+      this.measure((x, y, width, height) => {
+        if (this._isMounted) {
+          if (
+            layout.x !== x ||
+            layout.y !== y ||
+            layout.width !== width ||
+            layout.height !== height
+          ) {
+            this._layoutState = { x, y, width, height };
+            const nativeEvent = {
+              layout: this._layoutState
+            };
+            Object.defineProperty(nativeEvent, 'target', {
+              enumerable: true,
+              get: () => findNodeHandle(this)
+            });
+            onLayout({ nativeEvent, timeStamp: Date.now() });
+          }
+        }
+      });
+    }
+  };
+```
+这里的重点是this.measure，这个方法是NativeMethodsMixin中的方法之一，是在在applyNativeMethods的过程中添加到组件上的。
+```
+// NativeMethodsMixin/index.js
+measure(callback: MeasureOnSuccessCallback) {
+    UIManager.measure(findNodeHandle(this), callback);
+},
+
+// UIManager/index.js
+measure(node, callback) {
+    measureLayout(node, null, callback);
+},
+const measureLayout = (node, relativeToNativeNode, callback) => {
+  const relativeNode = relativeToNativeNode || (node && node.parentNode);
+  if (node && relativeNode) {
+    setTimeout(() => {
+      const relativeRect = getBoundingClientRect(relativeNode);
+      const { height, left, top, width } = getRect(node);
+      // x,y是指相对父元素的位置
+      const x = left - relativeRect.left;  
+      const y = top - relativeRect.top;    
+      callback(x, y, width, height, left, top);
+    }, 0);
+  }
+};
+```
+通过this.measure方法将该组件对应的节点当前的（x,y,width,height）作为回调参数。
