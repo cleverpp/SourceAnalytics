@@ -74,5 +74,6 @@ const domProps = createDOMProps(Component, props);
     domProps.style = style;
   }
   ```
-  其中styleResolver(reactNativeStyle)=
+  其中styleResolver(reactNativeStyle)=(new ReactNativeStyleResolver).resolve(reactNativeStyle)
+  
 5. nativeID转化为web元素的id
