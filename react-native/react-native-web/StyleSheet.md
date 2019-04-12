@@ -82,5 +82,5 @@ function flattenStyle(style: ?StyleObj): ?Object {
 export default flattenStyle;
 ```
 - 样式是number型，则应该是id，通过ReactNativePropRegistry.getByID(style)来获取具体的样式
-- 样式是数组，递归调用数组中的每一项，然后保存在对象result中，这样保证key值相同的样式，以数组后面的为准。即后面非赋值会覆盖前面的赋值。
+- 样式是数组，递归调用数组中的每一项，然后保存在对象result中，这样保证key值相同的样式，以数组后面的为准。即后面的赋值会覆盖前面的赋值。
 - 样式是其它类型，例如object，则直接返回该object。
