@@ -85,44 +85,8 @@ const domProps = createDOMProps(Component, props);
   }
   ```
   其中styleResolver(reactNativeStyle)=(new ReactNativeStyleResolver()).resolve(reactNativeStyle)
-  ```
-  resolve(style) {
-    if (!style) {
-      return emptyObject;
-    }
-
-    // fast and cachable
-    if (typeof style === 'number') {
-      this._injectRegisteredStyle(style);
-      const key = createCacheKey(style);
-      return this._resolveStyleIfNeeded(style, key);
-    }
-
-    // resolve a plain RN style object
-    if (!Array.isArray(style)) {
-      return this._resolveStyleIfNeeded(style);
-    }
-
-    // flatten the style array
-    // cache resolved props when all styles are registered
-    // otherwise fallback to resolving
-    const flatArray = flattenArray(style);
-    let isArrayOfNumbers = true;
-    let cacheKey = '';
-    for (let i = 0; i < flatArray.length; i++) {
-      const id = flatArray[i];
-      if (typeof id !== 'number') {
-        isArrayOfNumbers = false;
-      } else {
-        if (isArrayOfNumbers) {
-          cacheKey += (id + '-');
-        }
-        this._injectRegisteredStyle(id);
-      }
-    }
-    const key = isArrayOfNumbers ? createCacheKey(cacheKey) : null;
-    return this._resolveStyleIfNeeded(flatArray, key);
-  }
-  ```
+  
+  深入分析，其处理步骤为：
+  - 
   
 5. nativeID转化为web元素的id
