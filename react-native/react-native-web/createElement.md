@@ -103,7 +103,7 @@ const domProps = createDOMProps(Component, props);
     return className;
     }
     ```
-    创建className的规则为：基于该规则，同样的样式属性，一直值相同，其生成的className是一样的。
+    创建className的规则为：基于该规则，同样的样式属性以及值相同，其生成的className是一样的。
     ```
     const createClassName = (prop, value) => {
       const hashed = hash(prop + normalizeValue(value));
