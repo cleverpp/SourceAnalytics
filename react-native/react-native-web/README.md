@@ -136,8 +136,7 @@ export default class AppRegistry {
 ### [createElement](https://github.com/cleverpp/SourceAnalytics/blob/master/react-native/react-native-web/createElement.md)
 
 ## 如何扩展
-
-
+通过了解源码以及修改源码
 
 # 参考
 1. [React Native转web方案：react-native-web](https://juejin.im/post/5b79397be51d45389153b060)
