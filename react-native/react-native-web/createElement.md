@@ -86,7 +86,51 @@ const domProps = createDOMProps(Component, props);
   ```
   其中styleResolver(reactNativeStyle)=(new ReactNativeStyleResolver()).resolve(reactNativeStyle)
   
-  深入分析，其处理步骤为：
-  - 
+  深入分析，其处理方式为：
+  - 将样式对象的属性一一创建为一个新的className，并以该className、prop、value生成一条原子css规则，并将该条规则插入到WebStyleSheet(“react-native-stylesheet”);
+    ```
+    injectDeclaration(prop, value): string {
+    const val = normalizeValue(value);
+    let className = this.getClassName(prop, val);  // 先去缓存中查找
+    if (!className) {
+      className = createClassName(prop, val);// 缓存中没有则创建className
+      this._addToCache(className, prop, val);// 添加到缓存中，缓存中可以基于className获得样式属性及值，也可以通过样式属性及值获取className
+      const rules = createAtomicRules(`.${className}`, prop, value);
+      rules.forEach(rule => {
+        this._sheet.insertRuleOnce(rule); //并将该条规则插入到WebStyleSheet(“react-native-stylesheet”)中
+      });
+    }
+    return className;
+    }
+    ```
+    创建className的规则为：基于该规则，同样的样式属性，一直值相同，其生成的className是一样的。
+    ```
+    const createClassName = (prop, value) => {
+      const hashed = hash(prop + normalizeValue(value));
+      return process.env.NODE_ENV !== 'production' ? `rn-${prop}-${hashed}` : `rn-${hashed}`;
+    };
+    ```
+  - 将该组件上所有的className放到数组prop.classList中，并将其转化为字符串最后作为该组件的prop.className.
   
 5. nativeID转化为web元素的id
+## adjustProps(domProps)
+主要是处理以下几种事件类型的属性：
+```
+const eventHandlerNames = {
+  onBlur: true,
+  onClick: true,
+  onClickCapture: true,
+  onContextMenu: true,
+  onFocus: true,
+  onResponderRelease: true,
+  onTouchCancel: true,
+  onTouchCancelCapture: true,
+  onTouchEnd: true,
+  onTouchEndCapture: true,
+  onTouchMove: true,
+  onTouchMoveCapture: true,
+  onTouchStart: true,
+  onTouchStartCapture: true
+};
+```
+如果是鼠标(mouse)事件，则normalizeMouseEvent，如果Touch事件，则normalizeTouchEvent。并将正规化的事件作为参数传递给事件函数
