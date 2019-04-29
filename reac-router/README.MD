@@ -2,10 +2,12 @@
 1. 源码分析 基于v4.2.2
 2. 使用了lerna管理packages，可以让你在主项目下管理多个子项目，从而解决了多个包互相依赖，且发布时需要手动维护多个包的问题
 3. 编译cjs和es模式时，使用了babel；编译umd模式时，使用了rollup
+4. 基础知识 [history](https://github.com/ReactTraining/history) 库
 
 ## react-router
 
 ## react-router-dom
+### HashRouter
 
 ## react-router-native
 
