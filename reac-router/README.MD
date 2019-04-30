@@ -8,9 +8,9 @@
   - createHashHistory, legacy browser support
 
 ## history
+### createHashHistory
+
 ### createBrowserHistory
-
-
 ## react-router
 
 ## react-router-dom
