@@ -24,8 +24,16 @@ static propTypes = {
 ### Router
 该组件是HashRouter、BrowserRouter等的底层Router实现，其最终渲染的是属性children的内容，且只支持children数目为1. 通常children即项目业务的入口组件
 1. 支持2个属性：history，children
-2. 使用了legacy context 传递router
+2. 使用了legacy context，既从父组件中通过this.context.router获取router，也向子组件传递丰富后的router
   ```
+  static contextTypes = {
+    router: PropTypes.object
+  }
+
+  static childContextTypes = {
+    router: PropTypes.object.isRequired
+  }
+
   getChildContext() {
     return {
       router: {
@@ -44,6 +52,65 @@ static propTypes = {
   render() {
     const { children } = this.props
     return children ? React.Children.only(children) : null
+  }
+  ```
+4. this.state.match
+  ```
+  state = {
+    match: this.computeMatch(this.props.history.location.pathname)
+  }
+
+  computeMatch(pathname) {
+    return {
+      path: '/',
+      url: '/',
+      params: {},
+      isExact: pathname === '/'
+    }
+  }
+  ```
+### Route，渲染匹配上path对应的component
+1. 支持的属性
+  ```
+  static propTypes = {
+    computedMatch: PropTypes.object, // private, from <Switch>
+    path: PropTypes.string,
+    exact: PropTypes.bool,
+    strict: PropTypes.bool,
+    sensitive: PropTypes.bool,
+    component: PropTypes.func,
+    render: PropTypes.func,
+    children: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.node
+    ]),
+    location: PropTypes.object
+  }
+  ```
+2. 使用了legacy context，既从父组件中通过this.context.router获取router，也向子组件传递丰富后的router
+  ```
+  static contextTypes = {
+    router: PropTypes.shape({
+      history: PropTypes.object.isRequired,
+      route: PropTypes.object.isRequired,
+      staticContext: PropTypes.object
+    })
+  }
+
+  static childContextTypes = {
+    router: PropTypes.object.isRequired
+  }
+
+  getChildContext() {
+    return {
+      router: {
+        ...this.context.router,
+        route: {
+          location: this.props.location || this.context.router.route.location,
+          match: this.state.match
+        }
+      }
+    }
   }
   ```
 
