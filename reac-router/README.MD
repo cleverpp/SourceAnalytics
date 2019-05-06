@@ -128,7 +128,9 @@ static propTypes = {
   ```
 5. 传递给需渲染的component的props={match, location, history, staticContext }
 ### Switch
-
+1. children 是Route 或者是 Redirect
+2. 遍历children，找出第一个匹配的，并渲染它。
+### Redirect
 
 
 ## react-router-dom
