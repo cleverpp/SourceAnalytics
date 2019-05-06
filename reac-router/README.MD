@@ -69,7 +69,7 @@ static propTypes = {
     }
   }
   ```
-### Route，渲染匹配上path对应的component
+### Route，当location.pathname匹配上path时，渲染该path对应的component
 1. 支持的属性
   ```
   static propTypes = {
@@ -87,7 +87,7 @@ static propTypes = {
     location: PropTypes.object
   }
   ```
-2. 使用了legacy context，既从父组件中通过this.context.router获取router，也向子组件传递丰富后的router
+2. 使用了legacy context，既从父组件(一般是Router)中通过this.context.router获取router，也向子组件传递丰富后的router
   ```
   static contextTypes = {
     router: PropTypes.shape({
@@ -113,6 +113,23 @@ static propTypes = {
     }
   }
   ```
+3. component、render、children 不应该同时出现，优先级依次是component、render、children。
+4. matchPath 采用了 path-to-regexp来实现匹配， 其中返回的match对象如下所示：
+  ```
+  {
+    path, // the path pattern used to match
+    url: path === '/' && url === '' ? '/' : url, // the matched portion of the URL
+    isExact, // whether or not we matched exactly
+    params: keys.reduce((memo, key, index) => {   // 通过正则获取到的路由的动态参数部分，例如/far/:bar, 则会有params={bar:'xxx'}
+      memo[key.name] = values[index]
+      return memo
+    }, {})
+  }
+  ```
+5. 传递给需渲染的component的props={match, location, history, staticContext }
+### Switch
+
+
 
 ## react-router-dom
 ### HashRouter
