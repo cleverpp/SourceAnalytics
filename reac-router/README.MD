@@ -20,7 +20,42 @@ static propTypes = {
 }
 ```
 ### StaticRouter(适用于server-side rendering scenarios)
+1. 通过legacy context，向子组件传递router.statciContext
+```
+  static childContextTypes = {
+    router: PropTypes.object.isRequired
+  }
 
+  getChildContext() {
+    return {
+      router: {
+        staticContext: this.props.context
+      }
+    }
+  }
+```
+2. 不支持传递history属性，每次渲染时创建history
+```
+  render() {
+    const { basename, context, location, ...props } = this.props
+
+    const history = {
+      createHref: this.createHref,
+      action: 'POP',
+      location: stripBasename(basename, createLocation(location)),
+      push: this.handlePush,
+      replace: this.handleReplace,
+      go: staticHandler('go'),
+      goBack: staticHandler('goBack'),
+      goForward: staticHandler('goForward'),
+      listen: this.handleListen,
+      block: this.handleBlock
+    }
+
+    return <Router {...props} history={history}/>
+  }
+```
+3. 通过context记录push、replace，不支持go、goBack、goForward、listen、block。
 ### Router
 该组件是HashRouter、BrowserRouter等的底层Router实现，其最终渲染的是属性children的内容，且只支持children数目为1. 通常children即项目业务的入口组件
 1. 支持2个属性：history，children
@@ -126,7 +161,7 @@ static propTypes = {
     }, {})
   }
   ```
-5. 传递给需渲染的component的props={match, location, history, staticContext }
+5. 传递给需渲染的component(或render、children)的props={match, location, history, staticContext }
 ### Switch
 1. children 是Route 或者是 Redirect
 2. 遍历children，找出第一个匹配的，并渲染它。
@@ -220,9 +255,164 @@ static propTypes = {
     children: PropTypes.node
 }
 ```
-
+### Link
+对a标签的一个封装，使用history的push或replace来进行页面跳转
+### NavLink
+对Link组件的一个封装(增加了父组件Route来对path的是否匹配进行判断)，支持activeClassName(和/或activeStyle)，以及isActive的逻辑判断。 如果active则应用activeClassName(和/或activeStyle)对应的样式。
 ## react-router-native
 
 ## react-router-config
+静态路由配置助手，ReactRoute V4并不需要一个集中的路由配置，react-router-config适用于以下几种场景：
+1. 服务端加载数据 或 渲染下一屏前 等类似钩子函数作用的场景 Loading data on the server or in the lifecycle before rendering the next screen
+2. 按name进行路由跳转 Linking to routes by name
+3. 静态分析 Static analysis
 
-## react-router and redux
+注意事项：
+1. Route仅接受component属性，不接render或children
+2. routes属性用来定义子路由
+3. 支持key属性来性能优化
+### matchRoutes(routes, pathname)
+返回匹配pathname的所有{route,match}(包括嵌套的子route）
+### renderRoutes(routes, extraProps = {})
+使用Switch来渲染routes(即子路由),支持给子路由统一增加额外属性extraProps
+```
+// example
+const Child = ({ route }) => (
+  <div>
+    <h2>Child</h2>
+    {/* child routes won't render without this */}
+    {renderRoutes(route.routes, { someProp: "these extra props are optional" })}
+  </div>
+);
+```
+## react-router-redux (version:5.0.0-alpha.6)(后续版本中已经deprecated)
+1. 提供了ConnectedRouter用来从react-redux的Provider中获取store，并监听location的变化及时更新this.store.location
+```
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Router } from 'react-router'
+
+import { LOCATION_CHANGE } from './reducer'
+
+class ConnectedRouter extends Component {
+  static propTypes = {
+    store: PropTypes.object,
+    history: PropTypes.object,
+    children: PropTypes.node
+  }
+
+  static contextTypes = {
+    store: PropTypes.object    // 可以通过this.context.store 来实时获取store
+  }
+
+  handleLocationChange = location => {
+    this.store.dispatch({
+      type: LOCATION_CHANGE,
+      payload: location
+    })
+  }
+
+  componentWillMount() {
+    const { store:propsStore, history } = this.props
+    this.store = propsStore || this.context.store
+    this.handleLocationChange(history.location)   // 初始化this.store.location
+  }
+
+  componentDidMount() {
+    const { history } = this.props  // 此处的history需与routerMiddleware(history)为同一个，BrowserHistory或HashHistory等
+    this.unsubscribeFromHistory = history.listen(this.handleLocationChange)  // location发生变化时及时更新this.store.location
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribeFromHistory) this.unsubscribeFromHistory()
+  }
+
+  render() {
+    return <Router {...this.props} />
+  }
+}
+
+export default ConnectedRouter
+
+```
+2. 提供了routerReducer用来修改this.state.router
+```
+export function routerReducer(state = initialState, { type, payload } = {}) {
+  if (type === LOCATION_CHANGE) {
+    return { ...state, location: payload }
+  }
+
+  return state
+}
+```
+3. 提供了push、replace、go、goBack、goForward等action，它们的action.type均为CALL_HISTORY_METHOD
+4. 提供了routerMiddleware用来加强redux
+```
+import { CALL_HISTORY_METHOD } from './actions'
+
+/**
+ * This middleware captures CALL_HISTORY_METHOD actions to redirect to the
+ * provided history object. This will prevent these actions from reaching your
+ * reducer or any middleware that comes after this one.
+ */
+export default function routerMiddleware(history) {
+  return () => next => action => {
+    if (action.type !== CALL_HISTORY_METHOD) {
+      return next(action)
+    }
+
+    const { payload: { method, args } } = action
+    history[method](...args)
+  }
+}
+```
+当action === CALL_HISTORY_METHOD时，直接操作history，history会监听location的变化并触发this.store.location的变化
+
+5. 基础使用方法如下所示：
+```
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'
+
+import createHistory from 'history/createBrowserHistory'
+import { Route } from 'react-router'
+
+import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
+
+import reducers from './reducers' // Or wherever you keep your reducers
+
+// Create a history of your choosing (we're using a browser history in this case)
+const history = createHistory()
+
+// Build the middleware for intercepting and dispatching navigation actions
+const middleware = routerMiddleware(history)
+
+// Add the reducer to your store on the `router` key
+// Also apply our middleware for navigating
+const store = createStore(
+  combineReducers({
+    ...reducers,
+    router: routerReducer
+  }),
+  applyMiddleware(middleware)
+)
+
+// Now you can dispatch navigation actions from anywhere!
+// store.dispatch(push('/foo'))
+
+ReactDOM.render(
+  <Provider store={store}>
+    { /* ConnectedRouter will use the store from Provider automatically */ }
+    <ConnectedRouter history={history}>
+      <div>
+        <Route exact path="/" component={Home}/>
+        <Route path="/about" component={About}/>
+        <Route path="/topics" component={Topics}/>
+      </div>
+    </ConnectedRouter>
+  </Provider>,
+  document.getElementById('root')
+)
+```
