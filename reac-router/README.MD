@@ -182,9 +182,9 @@ perform() {
 1. [使用了hoist-non-react-statics来自动复制 高阶组件中被包裹的组件 的静态方法](https://reactjs.org/docs/higher-order-components.html#static-methods-must-be-copied-over)。
 2. 在component组件上封装一层Route组件，从而可以传递props={match, location, history}等属性给component
 3. [为什么 withRouter 高阶组件应该 处于最外层？](https://zhuanlan.zhihu.com/p/36895827)
->因为 withRouter 本身的作用是为了给那些需要操作 route 的组件提供 location 等属性。如果一个组件本身就已经能拿到这些属性了，那再使用 withRouter 就是一种浪费了。通过Route包裹的组件，就实在没必要包裹一层 withRouter 了
 4. [可以解决re-render时，可能会被PureComponent和shouldComponentUpdate阻断更新的问题](https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md)
 5. 设置withRouter的属性wrappedComponentRef，可以传递给被包裹组件。
+6. withRouter 本身的作用是为了给那些需要操作 route 的组件提供 location 等属性。如果一个组件本身就已经能拿到这些属性了，那再使用 withRouter 就是一种浪费了。通过Route包裹的组件，就实在没必要包裹一层 withRouter 了
 
 ### Prompt
 主要功能是调用history.block，其中when属性决定是否调用，message是调用block时提示的内容
@@ -260,7 +260,201 @@ static propTypes = {
 ### NavLink
 对Link组件的一个封装(增加了父组件Route来对path的是否匹配进行判断)，支持activeClassName(和/或activeStyle)，以及isActive的逻辑判断。 如果active则应用activeClassName(和/或activeStyle)对应的样式。
 ## react-router-native
+```
+export * from 'react-router'
 
+import BackButton from './BackButton'
+import DeepLinking from './DeepLinking'
+import Link from './Link'
+import NativeRouter from './NativeRouter'
+
+export {
+  BackButton,
+  BackButton as AndroidBackButton,
+  DeepLinking,
+  Link,
+  NativeRouter
+}
+```
+### NativeRouter
+使用了MemoryRouter，默认提供了getUserConfirmation
+```
+import React from 'react'
+import PropTypes from 'prop-types'
+import MemoryRouter from 'react-router/MemoryRouter'
+import { Alert } from 'react-native'
+
+/**
+ * The public API for a <Router> designed for React Native. Gets
+ * user confirmations via Alert by default.
+ */
+const NativeRouter = (props) => (
+  <MemoryRouter {...props}/>
+)
+
+NativeRouter.propTypes = {
+  initialEntries: PropTypes.array,
+  initialIndex: PropTypes.number,
+  getUserConfirmation: PropTypes.func,
+  keyLength: PropTypes.number,
+  children: PropTypes.node
+}
+
+NativeRouter.defaultProps = {
+  getUserConfirmation: (message, callback) => {
+    Alert.alert('Confirm', message, [
+      { text: 'Cancel', onPress: () => callback(false) },
+      { text: 'OK', onPress: () => callback(true) }
+    ])
+  }
+}
+
+export default NativeRouter
+```
+### Link
+默认是对TouchableHighlight的封装，处理onPress属性时，使用history的push或replace
+```
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { TouchableHighlight } from 'react-native'
+
+class Link extends Component {
+  static contextTypes = {
+    router: PropTypes.shape({
+      history: PropTypes.shape({
+        push: PropTypes.func.isRequired,
+        replace: PropTypes.func.isRequired
+      }).isRequired
+    }).isRequired
+  }
+
+  static propTypes = {
+    onPress: PropTypes.func,
+    component: PropTypes.func,
+    replace: PropTypes.bool,
+    to: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.object
+    ])
+  }
+
+  static defaultProps = {
+    component: TouchableHighlight,
+    replace: false
+  }
+
+  handlePress = (event) => {
+    if (this.props.onPress)
+      this.props.onPress(event)
+
+    if (!event.defaultPrevented) {
+      const { history } = this.context.router
+      const { to, replace } = this.props
+
+      if (replace) {
+        history.replace(to)
+      } else {
+        history.push(to)
+      }
+    }
+  }
+
+  render() {
+    const { component: Component, to, replace, ...rest } = this.props
+    return <Component {...rest} onPress={this.handlePress}/>
+  }
+}
+
+export default Link
+```
+### DeepLinking
+使用了react-native的[Linking](https://reactnative.cn/docs/linking/), 深度链接，从外部app用intent调起目标APP的目标url
+```
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Linking } from 'react-native'
+
+const regex = /.*?:\/\//g
+
+class DeepLinking extends Component {
+  static contextTypes = {
+    router: PropTypes.shape({
+      history: PropTypes.shape({
+        push: PropTypes.func.isRequired
+      }).isRequired
+    }).isRequired
+  }
+
+  async componentDidMount() {
+    const url = await Linking.getInitialURL()
+    if (url)
+      this.push(url)
+    Linking.addEventListener('url', this.handleChange)
+  }
+
+  componentWillUnmount() {
+    Linking.removeEventListener('url', this.handleChange)
+  }
+
+  handleChange = (e) => {
+    this.push(e.url)
+  }
+
+  push = (url) => {
+    const pathname = url.replace(regex, '')
+    this.context.router.history.push(pathname)
+  }
+
+  render() {
+    return this.props.children || null;
+  }
+}
+
+export default DeepLinking
+```
+### BackButton
+使用了react-native的[BackHandler](https://reactnative.cn/docs/backhandler/),监听设备上的后退按钮事件。(适用于Android，ios无作用）。监听函数是按倒序的顺序执行（即后添加的函数先执行）。如果某一个函数返回 true，则后续的函数都不会被调用。
+```
+import React from 'react'
+import PropTypes from 'prop-types'
+import { BackHandler } from 'react-native'
+
+class BackButton extends React.Component {
+  static contextTypes = {
+    router: PropTypes.shape({
+      history: PropTypes.shape({
+        goBack: PropTypes.func.isRequired,
+        index: PropTypes.number.isRequired
+      }).isRequired
+    }).isRequired
+  }
+
+  componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBack)
+  }
+
+  handleBack = () => {
+    const { history } = this.context.router
+
+    if (history.index === 0) {
+      return false // home screen
+    } else {
+      history.goBack()
+      return true
+    }
+  }
+
+  render() {
+    return this.props.children || null
+  }
+}
+
+export default BackButton
+```
 ## react-router-config
 静态路由配置助手，ReactRoute V4并不需要一个集中的路由配置，react-router-config适用于以下几种场景：
 1. 服务端加载数据 或 渲染下一屏前 等类似钩子函数作用的场景 Loading data on the server or in the lifecycle before rendering the next screen
