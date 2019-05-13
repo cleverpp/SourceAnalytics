@@ -131,7 +131,45 @@ static propTypes = {
 1. children 是Route 或者是 Redirect
 2. 遍历children，找出第一个匹配的，并渲染它。
 ### Redirect
+```
+perform() {
+    const { history } = this.context.router
+    const { push, to } = this.props
 
+    if (push) {
+      history.push(to)
+    } else {
+      history.replace(to)
+    }
+}
+```
+### withRouter
+1. [使用了hoist-non-react-statics来自动复制 高阶组件中被包裹的组件 的静态方法](https://reactjs.org/docs/higher-order-components.html#static-methods-must-be-copied-over)。
+2. 在component组件上封装一层Route组件，从而可以传递props={match, location, history}等属性给component
+3. [为什么 withRouter 高阶组件应该 处于最外层？](https://zhuanlan.zhihu.com/p/36895827)
+>因为 withRouter 本身的作用是为了给那些需要操作 route 的组件提供 location 等属性。如果一个组件本身就已经能拿到这些属性了，那再使用 withRouter 就是一种浪费了。通过Route包裹的组件，就实在没必要包裹一层 withRouter 了
+4. [可以解决re-render时，可能会被PureComponent和shouldComponentUpdate阻断更新的问题](https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md)
+5. 设置withRouter的属性wrappedComponentRef，可以传递给被包裹组件。
+
+### Prompt
+主要功能是调用history.block，其中when属性决定是否调用，message是调用block时提示的内容
+```
+  enable(message) {
+    if (this.unblock)
+      this.unblock()
+
+    this.unblock = this.context.router.history.block(message)
+  }
+  componentWillMount() {
+    invariant(
+      this.context.router,
+      'You should not use <Prompt> outside a <Router>'
+    )
+
+    if (this.props.when)
+      this.enable(this.props.message)
+  }
+```
 
 ## react-router-dom
 ### HashRouter
