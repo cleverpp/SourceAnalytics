@@ -92,25 +92,28 @@ module.exports = {
 4. 根据上下文，只会处理本地响应
   - 从请求头user-agent中获取token，并进行验证C.validateSessionToken(c[1], B.UA_TOKEN)
   - 判断请求url的类型然后走不同的分支
-    + /appservice
+    + /appservice ： getAppServiceSource，获取appservice相关的源码文件
     + /calibration
-    + /\__pageframe__
-    + /editor
+    + /\__pageframe__ : getWebviewSource, 获取webview相关的源码
+    + /editor : getEditorSource
     + /trace
-    + /widgetwebview
-    + /widgetservice
-    + /game
+    + /widgetwebview ：getWidgetWebviewResource
+    + /widgetservice ：getWidgetServiceResource
+    + /game  ： getGamePageResource
     + /aboutblank
     + /favicon.ico
     + https://clients1.google.com/tbproxy/af/
     + http://aboutblank
-    + /^https?\:\/\/wxfile.open.weixin.qq.com\// 或者 http://tmp/ 或者 http://store/ 或者 http://usr/
-    + /^https?\:\/\/.*?\.game.open.weixin.qq.com/
-    + /usr
+    + /^https?\:\/\/wxfile.open.weixin.qq.com\// 或者 http://tmp/ 或者 http://store/ 或者 http://usr/  ： getLocalIdResponse
+    + /^https?\:\/\/.*?\.game.open.weixin.qq.com/  ：getGamePageResource
+    + /usr  ：getUsrFileResponse
     + /ideplugin 或 /^https?\:\/\/.*?\.?pluginservice.open.weixin.qq.com/
     + /experience
  ## appservice
- 
-
-
-
+ 1. \__asdebug__/asdebug.js
+ 响应内容为 文件./extensions/appservice/index.js， 初步推测是jsbridge
+ 2. \__workerasdebug__/workerasdebug.js
+ 响应内容为 文件./extensions/worker/index.js，推测作用是消息传递
+ 3. \__workerasdebug__/weixinworker.js
+ 响应内容为 文件./extensions/worker/weixinworker.tpl.js，消息监听作用
+ 4. ...
