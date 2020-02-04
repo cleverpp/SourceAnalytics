@@ -171,7 +171,7 @@ self.onmessage = event => {
     - 文档readyState==='compolete'或load事件后开始处理
     - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
     - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
-    - 如果是macOS，则执行h.init(global.Win) 【待进一步分析】
+    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口】
     - 处理异常。非开发者模式时，process.on('uncaughtException'、window.addEventListener('error'、global.contentWindow.addEventListener('error'，开发者模式时只处理了uncaughtException
     - **dispatch({type: m.USER_UPDATE_INFO, userInfo: q})**
     - **采用Object.defineProperties方式赋值global.userinfo，方便及时获取或设置最新的用户信息**
@@ -187,7 +187,7 @@ self.onmessage = event => {
     - 文档readyState==='compolete'或load事件后开始处理
     - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
     - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
-    - 如果是macOS，则执行h.init(global.Win) 【待进一步分析】
+    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口】
     - **处理启动参数含--inspect，则打开调试窗口chrome://inspect/#devices**
     - **处理启动参数含--cli**
     - **显示主窗口**
