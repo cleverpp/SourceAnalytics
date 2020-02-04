@@ -37,4 +37,36 @@ new proxy.proxyServer({
 })
 ```
 ## proxyLocal
+
 ## proxy
+   ```
+      function(callback) {
+        self.httpProxyServer = http.createServer(requestHandler.userRequestHandler)
+        callback(null)
+      },
+   ```
+以上说明proxy是http server。其中核心逻辑是requestHandler.userRequestHandler部分
+1. 获取请求信息
+2. 判断是本地响应还是远程响应userRule.shouldUseLocalResponse(req, reqData)
+3. 本地响应,读取的是文件req.anyproxy_map_local
+   ```
+   dealLocalResponse: function(req, reqBody, callback) {
+    if (req.method == "OPTIONS") {
+      callback(200, mergeCORSHeader(req.headers), "")
+    } else if (req.anyproxy_map_local) {
+      fs.readFile(req.anyproxy_map_local, function(err, buffer) {
+        if (err) {
+          callback(200, {}, "[AnyProxy failed to load local file] " + err)
+        } else {
+          callback(200, {}, buffer)
+        }
+      })
+    }
+   },
+   ```
+4. 远程响应
+  - 默认的userRules是不会处理远程响应的，如果需要处理远程响应，需调用requestHandler.setRules(newRules)
+  - 追溯rules，发现只覆盖了：forceLocalProxy，dealLocalResponse
+
+
+
