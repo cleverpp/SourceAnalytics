@@ -169,8 +169,8 @@ self.onmessage = event => {
 
 1. 多账号模式登录
     - 文档readyState==='compolete'或load事件后开始处理
-    - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【待进一步分析】
-    - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【待进一步分析】
+    - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
+    - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
     - 如果是macOS，则执行h.init(global.Win) 【待进一步分析】
     - 处理异常。非开发者模式时，process.on('uncaughtException'、window.addEventListener('error'、global.contentWindow.addEventListener('error'，开发者模式时只处理了uncaughtException
     - **dispatch({type: m.USER_UPDATE_INFO, userInfo: q})**
@@ -185,8 +185,8 @@ self.onmessage = event => {
         ```
 2. 非多账号模式
     - 文档readyState==='compolete'或load事件后开始处理
-    - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【待进一步分析】
-    - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【待进一步分析】
+    - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
+    - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
     - 如果是macOS，则执行h.init(global.Win) 【待进一步分析】
     - **处理启动参数含--inspect，则打开调试窗口chrome://inspect/#devices**
     - **处理启动参数含--cli**
