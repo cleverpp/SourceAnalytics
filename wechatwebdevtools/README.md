@@ -191,7 +191,7 @@ self.onmessage = event => {
     - **处理启动参数含--inspect，则打开调试窗口chrome://inspect/#devices**
     - **处理启动参数含--cli**
     - **显示主窗口**
-    - **获取当前有效端口，并赋值给global.cliPort，该端口作为参数启动CLI Server： n.start(a, t) 【待进一步分析】**
+    - **获取当前有效端口，并赋值给global.cliPort，该端口作为参数启动CLI Server： n.start(a, t) 【CLIServer.md】**
     - 处理异常。非开发者模式时，process.on('uncaughtException'、window.addEventListener('error'、global.contentWindow.addEventListener('error'，开发者模式时只处理了uncaughtException
     - **异步获取系统相关信息，例如:os、cpu、mem等**
     - ***区分开发模式和开发模式，加载模块u，并进行初始化u.init()，实际执行的是创建了一个BroadcastChannel，其中BROADCAST_CHANNEL_NAME为WINDOW_SYNC，并监听消息。***
