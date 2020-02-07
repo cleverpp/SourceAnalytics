@@ -7,7 +7,7 @@
     - /loginresult ，查询登录结果
     - /preview ，上传代码并生成预览二维码
     - /upload ， 上传代码
-    - /test ，
+    - /test ，执行自动测试
     - 判断是否为测试模式.如果是,则初始化...
       ```
       global.CLI.isTestMode && i.init()
@@ -20,22 +20,13 @@
 ## 预览功能
 ### 上传代码
 有以下几个过程：
-  - buildstart
-  - buildend
-  - packstart
-  - packend
-  - uploadstart
-  - uploadend
-
-详细操作
-1. 构建build
-  - checkfilestart
-  - checkfileend
-  - compilejsfilestart
-  - compilejsfileend
-  - compileotherfilestart
-  - compileotherfileend
-2. 打包pack
-3. 上传upload
+  - 构建build
+    + checkfile
+    + compilejs
+    + compileotherfile
+  - 打包pack
+  - 上传upload
+    + 上传服务（Bata版）：https://servicewechat.com/wxa-dev-new/commitsource?user-version=${c}&user-desc=${a}&uuid=${d}&gzip=1
+    + 上传服务： https://servicewechat.com/wxa-dev/commitsource?user-version=${c}&user-desc=${a}&uuid=${d}&gzip=1
 
 ### 生成二维码
