@@ -206,3 +206,56 @@ self.onmessage = event => {
     - 区分开发模式和开发模式，加载模块，并进行初始化init()，实际执行的是创建了一个BroadcastChannel，其中BROADCAST_CHANNEL_NAME为ACTION_TRANSFER
     - **获取当前版本号，并从缓存（文件存储）中获取lastVersion进行比较，如果比lastVersion大，则更新缓存，并执行l('update_success_report') 【待进一步分析】**
 
+## 从功能一步一步解析
+### 扫码登录
+1. 二维码的状态
+```
+        LOGIN_QR_STATUS: {
+            NOT_SCAN: 1,    //未扫码
+            SCAN: 2,        //扫码
+            CONFIRM: 3,     //确认
+            CANCEL: 4,      //取消
+            OUTDATED: 5,    //超时
+            NETWORK_ERROR: 6,   //网络错误
+            OCCUPIED: 7,      // 被占用？
+            REDIRECT_NETWORK_ERROR: 8,  //重定向网络错误
+            UNKNOWN: 10   // 未知
+        },
+```
+2. 还原render
+```
+<div class="container" style={{WebkitAppRegion:"drag"}}>
+    <div>
+        <div>
+            <c />    //组件c 是标题栏，区分window与mac平台，其中windows支持打开proxy：this.props.openIDESettings('proxy')
+            <div class="welcome">
+                <div class="welcome-hd">
+                    <h2>微信开发者工具</h2>
+                    <p>vglobal.appVersion</p>
+                </div>
+                <div class="welcome-hd">
+                    <div class="authenticate">
+                        <div class="authenticate-bd"> 
+                            //组件d 核心逻辑：生成二维码，并根据用户是否扫码进行响应
+                            <d ref={(a)=>this.qr=a} from="mainlogin" setStatus={this._setStatus} onLoginSuccess={this.props.loginSuccess} />
+                        </div>
+                        <div class="authenticate-ft">
+                            <p>欢迎使用微信开发者工具</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="welcome-ft" style={{e}}>
+                    <div class="luncher-account">
+                        <div class="luncher-account-avatar"></div>
+                        <div class="luncher-account-name" onClick={this.reset.bind(this)}>
+                            <p>切换账号</p>
+                            <i class="ui-icon-arrow-right-o"/>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+3. 
