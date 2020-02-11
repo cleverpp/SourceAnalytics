@@ -19,6 +19,7 @@ selectDevType: (a)=>(b,c)=>{
 }
 ```
 开发模式是小程序时，如果有过项目记录则窗口类型设置为MAIN_WINDOW_TYPE.SELECT_PROJECT，否则为MAIN_WINDOW_TYPE.CREATE_PROJECT
+
 2. MAIN_WINDOW_TYPE.SELECT_PROJECT
   - d9315b916750758dab0e8d5a8ad99c68.js
   - 3_开发者界面_SELECT_PROJECT
