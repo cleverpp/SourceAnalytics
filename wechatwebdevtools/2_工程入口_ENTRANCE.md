@@ -101,3 +101,20 @@ static openMiniProgram({appid: b, projectname: e, projectpath: f, options: g={}}
     !0
 }
 ```
+5. 打开窗口d.openWindow
+```
+static openWindow(a, c={}) {
+    const d = function(a, c) {
+        const d = {};
+        for (const b of a)
+            c.hasOwnProperty(b) && (d[b] = c[b]);
+        return c.width || (d.width = b.SIZE.DEFAULT.WIDTH),
+        c.height || (d.height = b.SIZE.DEFAULT.HEIGHT),
+        c.title || (d.title = nw.App.manifest.window.title),
+        c.hasOwnProperty('focus') || (d.focus = !0),
+        d.new_instance = !0,
+        d
+    }(['id', 'title', 'icon', 'position', 'always_on_top', 'width', 'height', 'min_width', 'min_height', 'max_width', 'max_height', 'resizable', 'kiosk', 'fullscreen', 'show_in_taskbar', 'frame', 'transparent', 'new_instance'], c);
+    nw.Window.open(a, d)
+}
+```
