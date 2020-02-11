@@ -198,7 +198,7 @@ self.onmessage = event => {
     - **监听切换locale事件：q.onChangeLocale((a,b)=>u.notifyChangeLocale(b))**
     - 执行渲染，ReactDOM.render(element, container)，React.createElement(type,[props],[...children])
         ```
-        // b:react-dom, a:react, c:react-redux的Provider，f: redux的store，e：React.Component【待进一步分析,需主要分析的模块】
+        // b:react-dom, a:react, c:react-redux的Provider，f: redux的store，e：React.Component【0-入口组件-1.md】
         b.render(a.createElement(c, {
             store: f
         }, a.createElement(e, null)), global.contentDocument.getElementById('container')),
@@ -207,5 +207,10 @@ self.onmessage = event => {
     - **获取当前版本号，并从缓存（文件存储）中获取lastVersion进行比较，如果比lastVersion大，则更新缓存，并执行l('update_success_report') 【待进一步分析】**
 
 ## 从功能一步一步解析
-### 扫码登录
+### 0-入口组件-1【非多账号模式】
+8e433dffaa20c3a7331f9aeecb1221b0.js
+### 0-入口组件-2【多账号模式】
+60fdb5a14c198acde3823b610d29f71f.js
+### 1-扫码登录【MAIN_WINDOW_TYPE.LOGIN】
+2dba3da3f9fb5ee64049d4556bb9519d.js
 ### 
