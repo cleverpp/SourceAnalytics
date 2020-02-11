@@ -178,7 +178,7 @@ self.onmessage = event => {
     - 加载模块s并执行s.init()，实际执行的是创建了一个BroadcastChannel，其中BROADCAST_CHANNEL_NAME为ACTION_TRANSFER
     - 执行渲染，ReactDOM.render(element, container)，React.createElement(type,[props],[...children])
         ```
-        // b:react-dom, a:react, c:react-redux的Provider，d: redux的store，l：React.Component【待进一步分析,需主要分析的模块】
+        // b:react-dom, a:react, c:react-redux的Provider，d: redux的store，l：React.Component【0-入口组件-2.md】
         b.render(a.createElement(c, {
             store: d
         }, a.createElement(l, null)), global.contentDocument.getElementById('container'))
@@ -206,7 +206,7 @@ self.onmessage = event => {
     - 区分开发模式和开发模式，加载模块，并进行初始化init()，实际执行的是创建了一个BroadcastChannel，其中BROADCAST_CHANNEL_NAME为ACTION_TRANSFER
     - **获取当前版本号，并从缓存（文件存储）中获取lastVersion进行比较，如果比lastVersion大，则更新缓存，并执行l('update_success_report') 【待进一步分析】**
 
-## 从功能一步一步解析
+## 从用户操作流程一步一步解析
 ### 0-入口组件-1【非多账号模式】
 8e433dffaa20c3a7331f9aeecb1221b0.js
 ### 0-入口组件-2【多账号模式】
@@ -217,3 +217,7 @@ self.onmessage = event => {
 0deb78a56cbcc9f9f3b0823d28892e90.js
 ### 3_开发者界面_SELECT_PROJECT【MAIN_WINDOW_TYPE.SELECT_PROJECT】
 d9315b916750758dab0e8d5a8ad99c68.js
+
+## 从各个功能进行解析
+### 预览
+### 真机调试
