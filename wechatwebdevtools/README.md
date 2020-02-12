@@ -171,7 +171,7 @@ self.onmessage = event => {
     - 文档readyState==='compolete'或load事件后开始处理
     - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
     - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
-    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口】
+    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口menu】
     - 处理异常。非开发者模式时，process.on('uncaughtException'、window.addEventListener('error'、global.contentWindow.addEventListener('error'，开发者模式时只处理了uncaughtException
     - **dispatch({type: m.USER_UPDATE_INFO, userInfo: q})**
     - **采用Object.defineProperties方式赋值global.userinfo，方便及时获取或设置最新的用户信息**
@@ -187,7 +187,7 @@ self.onmessage = event => {
     - 文档readyState==='compolete'或load事件后开始处理
     - 获取当前有效端口，并赋值给global.proxyPort，该端口作为参数用于启动代理服务器f.startProxyServer 【ProxyServer.md】
     - 再次获取当前有效端口，并赋值给global.messageCenterPort，该端口作为参数启动服务e.start(p) 【WebSocketServer.md】
-    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口】
+    - 如果是macOS，则执行h.init(global.Win) 【初始化主窗口menu】
     - **处理启动参数含--inspect，则打开调试窗口chrome://inspect/#devices**
     - **处理启动参数含--cli**
     - **显示主窗口**
@@ -209,12 +209,12 @@ self.onmessage = event => {
 ## 从用户操作流程一步一步解析
 ### 0-入口组件-1【非多账号模式】
 8e433dffaa20c3a7331f9aeecb1221b0.js
-### 0-入口组件-2【多账号模式】
-60fdb5a14c198acde3823b610d29f71f.js
 ### 1-扫码登录_LOGIN【MAIN_WINDOW_TYPE.LOGIN】
 2dba3da3f9fb5ee64049d4556bb9519d.js
 ### 2_工程入口_ENTRANCE【MAIN_WINDOW_TYPE.ENTRANCE】
 0deb78a56cbcc9f9f3b0823d28892e90.js
+### 0-入口组件-2【多账号模式】
+60fdb5a14c198acde3823b610d29f71f.js
 
 ## 从各个功能进行解析
 ### 预览
