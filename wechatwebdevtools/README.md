@@ -215,6 +215,8 @@ self.onmessage = event => {
 2dba3da3f9fb5ee64049d4556bb9519d.js
 ### 2_工程入口_ENTRANCE【MAIN_WINDOW_TYPE.ENTRANCE】
 0deb78a56cbcc9f9f3b0823d28892e90.js
+### 3_开发小程序
+2c0e34a9e23574aea227f3448a526c52.js
 
 ## 从各个功能进行解析
 ### 预览
